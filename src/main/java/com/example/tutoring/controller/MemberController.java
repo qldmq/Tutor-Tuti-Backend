@@ -4,6 +4,8 @@ package com.example.tutoring.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
@@ -18,5 +20,11 @@ public class MemberController {
 	{
 		log.info("로그인 페이지 진입");
 	}	
-			
+
+	// 회원가입 기능
+	@PostMapping("/signup")
+	public void signUp (Model model) {
+		log.info("signup API 진입");
+	}
+
 }
