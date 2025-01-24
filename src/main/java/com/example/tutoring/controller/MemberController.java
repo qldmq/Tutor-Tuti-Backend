@@ -13,7 +13,7 @@ public class MemberController {
 	
 	private final Logger log = LoggerFactory.getLogger(MemberController.class);
 	
-	@RequestMapping("/loginpage")
+	@RequestMapping("/loginPage")
 	public void InitLoginPage()
 	{
 		log.info("로그인 페이지 진입");

@@ -32,6 +32,8 @@ public class MemberDto {
 
 	private String  profileImg;
 	
+	private String introduction;
+	
 	public static MemberDto toDto(Member entity)
 	{
 		return MemberDto.builder()
@@ -42,6 +44,7 @@ public class MemberDto {
 				.loginType(entity.getLoginType())
 				.nickname(entity.getNickname())
 				.profileImg(entity.getProfileImg())
+				.introduction(entity.getIntroduction())
 				.build();
 	}
 	

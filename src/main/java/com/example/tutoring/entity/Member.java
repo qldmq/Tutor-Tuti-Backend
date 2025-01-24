@@ -46,6 +46,9 @@ public class Member {
 	private String  profileImg;
 	
 	
+	@Column(name="introduction")
+	private String introduction;
+	
 	public static Member toEntity(MemberDto dto)
 	{
 		return Member.builder()
@@ -55,6 +58,7 @@ public class Member {
 				.loginType(dto.getLoginType())
 				.nickname(dto.getNickname())
 				.profileImg(dto.getProfileImg())
+				.introduction(dto.getIntroduction())
 				.build();
 	}
 	
