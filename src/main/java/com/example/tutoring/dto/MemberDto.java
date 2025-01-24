@@ -18,30 +18,30 @@ import lombok.ToString;
 @AllArgsConstructor
 public class MemberDto {
 
-	private Integer member_num;
+	private Integer memberNum;
+	
+	private String memberId;
 
 	private String email;
 
 	private String password;
 
-	private Integer login_type;
-
-	private String phone;
+	private Integer loginType;
 
 	private String nickname;
 
-	private String  profile_img;
+	private String  profileImg;
 	
 	public static MemberDto toDto(Member entity)
 	{
 		return MemberDto.builder()
-				.member_num(entity.getMember_num())
+				.memberNum(entity.getMemberNum())
+				.memberId(entity.getMemberId())
 				.email(entity.getEmail())
 				.password(entity.getPassword())
-				.login_type(entity.getLogin_type())
-				.phone(entity.getPhone())
+				.loginType(entity.getLoginType())
 				.nickname(entity.getNickname())
-				.profile_img(entity.getProfile_img())
+				.profileImg(entity.getProfileImg())
 				.build();
 	}
 	

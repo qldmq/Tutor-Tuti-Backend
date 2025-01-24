@@ -25,12 +25,12 @@ public class MemberRepositoryTest {
 	{
 		
 		MemberDto memberDto = MemberDto.builder()
+							.memberId("test")
 							.email("test@example.com")
 							.password("1q2w3e4r5t")
-							.login_type(0)
-							.phone("01022223333")	
+							.loginType(0)
 							.nickname("테스트계정")
-							.profile_img("/data/img.jpg")
+							.profileImg("/data/img.jpg")
 							.build();			
 		
 		Member member = Member.toEntity(memberDto);
@@ -39,7 +39,7 @@ public class MemberRepositoryTest {
 		
 		
 		assertThat(savedMember);
-		assertThat(savedMember.getMember_num()).isNotNull();
+		assertThat(savedMember.getMemberNum()).isNotNull();
         assertThat(savedMember.getEmail()).isEqualTo("test@example.com");
 	}
 	

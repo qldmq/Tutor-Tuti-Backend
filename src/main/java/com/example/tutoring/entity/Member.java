@@ -23,8 +23,11 @@ public class Member {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="member_num")
-	private Integer member_num;
+	@Column(name="memberNum")
+	private Integer memberNum;
+	
+	@Column(name="memberId")
+	private String memberId;
 	
 	@Column(name="email")
 	private String email;
@@ -32,29 +35,26 @@ public class Member {
 	@Column(name="password")
 	private String password;
 	
-	@Column(name="login_type")
-	private Integer login_type;
+	@Column(name="loginType")
+	private Integer loginType;
 	
-	@Column(name="phone")
-	private String phone;
 	
 	@Column(name="nickname")
 	private String nickname;
 	
-	@Column(name="profile_img")
-	private String  profile_img;
+	@Column(name="profileImg")
+	private String  profileImg;
 	
 	
 	public static Member toEntity(MemberDto dto)
 	{
 		return Member.builder()
-				.member_num(dto.getMember_num())
+				.memberNum(dto.getMemberNum())
 				.email(dto.getEmail())
 				.password(dto.getPassword())
-				.login_type(dto.getLogin_type())
-				.phone(dto.getPhone())
+				.loginType(dto.getLoginType())
 				.nickname(dto.getNickname())
-				.profile_img(dto.getProfile_img())
+				.profileImg(dto.getProfileImg())
 				.build();
 	}
 	
