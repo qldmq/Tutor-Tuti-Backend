@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/member")
 public class MemberController {
-
 	
 	private final Logger log = LoggerFactory.getLogger(MemberController.class);
 	
@@ -19,6 +18,7 @@ public class MemberController {
 	public void InitLoginPage()
 	{
 		log.info("로그인 페이지 진입");
+				
 	}	
 
 	// 회원가입 기능
