@@ -3,16 +3,21 @@ package com.example.tutoring.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import com.example.tutoring.service.S3Uploader;
 
 @Controller
 @RequestMapping("/member")
 public class MemberController {
 	
 	private final Logger log = LoggerFactory.getLogger(MemberController.class);
+	
+	@Autowired
+	S3Uploader s3Uploader;
 	
 	@RequestMapping("/loginPage")
 	public void InitLoginPage()
@@ -27,4 +32,5 @@ public class MemberController {
 		log.info("signup API 진입");
 	}
 
+	
 }
