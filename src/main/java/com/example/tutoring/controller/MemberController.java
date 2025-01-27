@@ -26,6 +26,7 @@ public class MemberController {
 	public void InitLoginPage()
 	{
 		log.info("로그인 페이지 진입");
+				
 	}	
 
 	// 회원가입 기능
