@@ -4,7 +4,13 @@ import com.example.tutoring.dto.MemberDto;
 import com.example.tutoring.entity.Member;
 import com.example.tutoring.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class MemberService {
@@ -13,22 +19,55 @@ public class MemberService {
     private MemberRepository memberRepository;
 
     // 회원가입 처리
-    public void signUp(MemberDto memberDto) {
-        
-        // 1. 중복 검사
+    public Map<String, Object> signUp(Map<String, Object> memberData) {
 
-        // 2. Member 객체 생성
-        Member member = Member.builder()
-                .memberId(memberDto.getMemberId())
-                .email(memberDto.getEmail())
-                .password(memberDto.getPassword())
-                // .nickname(memberDto.getNickname())
-                .build();
+        System.out.println("회원가입 데이터: " + memberData.toString());
 
-        // 3. DB 저장
-        memberRepository.save(member);
+        String newNick = createNick();
+        Map<String, Object> responseMap = new HashMap<>();
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+        try {
+            // 중복 아이디가 있을 경우
+            if (checkMemberId(memberData.get("memberId").toString())) {
+                responseMap.put("status", 400);
+                responseMap.put("message", "이미 존재하는 아이디입니다.");
+                return responseMap;
+            }
+
+            MemberDto memberDto = MemberDto.builder()
+                    .loginType(0)
+                    .memberId(memberData.get("memberId").toString())
+                    .email(memberData.get("email").toString())
+                    .password(passwordEncoder.encode(memberData.get("password").toString()))
+                    .nickname(newNick)
+                    .introduction("안녕하세요")  // DB 설정대로 출력되도록 수정 필요
+                    .build();
+
+            System.out.println("password");
+
+            Member member = Member.toEntity(memberDto);
+            memberRepository.save(member);
+            responseMap.put("status", 200);
+        } catch (Exception e) {
+            responseMap.put("status", 400);
+        }
+
+        return responseMap;
     }
 
+    // 아이디 중복 확인
+    public boolean checkMemberId(String memberId) {
 
+        return memberRepository.existsByMemberId(memberId);
+    }
 
+    // 닉네임 생성
+    public String createNick() {
+
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+
+        return now.format(formatter);
+    }
 }

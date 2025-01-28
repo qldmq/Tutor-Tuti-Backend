@@ -19,7 +19,7 @@ public class MemberRepositoryTest {
 	private MemberRepository memberRepository;
 	
 	@Test
-	//@Transactional
+	@Transactional
 	@Commit
 	public void testInsertMember()
 	{

@@ -31,31 +31,13 @@ public class MemberController {
 
 	// 회원가입 기능
 	@PostMapping("/signup")
-	public void signUp (@RequestBody Map<String, Object> paramMap) {
-		log.info("signup API 진입");
-		log.info("회원가입 요청 데이터: {}", paramMap);
 
-		String memberId = (String) paramMap.get("memberId");
-		String email = (String) paramMap.get("email");
-		String password = (String) paramMap.get("password");
-		String nickname = "nickname";
-
-		// 유효성 검사: 필수 값 체크
-		if (memberId == null || email == null || password == null) {
-			log.error("회원가입 필수 값이 누락되었습니다.");
-			// 적절한 응답을 반환하거나 예외를 던질 수 있습니다.
-			return;
-		}
-
-		MemberDto memberDto = MemberDto.builder()
-				.memberId(memberId)
-				.email(email)
-				.password(password)
-				.nickname(nickname)
-				.build();
+	public Map<String, Object> signUp (@RequestBody Map<String, Object> memberData) {
+		log.info("----/member/signup API 진입-----");
+		log.info("회원가입 요청 데이터: {}", memberData);
 
 		// 회원가입 처리 서비스 호출
-		memberService.signUp(memberDto);
+		return memberService.signUp(memberData);
 	}
 
 }
