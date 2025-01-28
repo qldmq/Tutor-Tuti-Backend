@@ -21,8 +21,6 @@ public class MemberService {
     // 회원가입 처리
     public Map<String, Object> signUp(Map<String, Object> memberData) {
 
-        System.out.println("회원가입 데이터: " + memberData.toString());
-
         String newNick = createNick();
         Map<String, Object> responseMap = new HashMap<>();
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -44,7 +42,6 @@ public class MemberService {
                     .introduction("안녕하세요")  // DB 설정대로 출력되도록 수정 필요
                     .build();
 
-            System.out.println("password");
 
             Member member = Member.toEntity(memberDto);
             memberRepository.save(member);
