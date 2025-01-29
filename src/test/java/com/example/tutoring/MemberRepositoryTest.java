@@ -23,7 +23,7 @@ public class MemberRepositoryTest {
 	@Commit
 	public void testInsertMember()
 	{
-		
+
 		MemberDto memberDto = MemberDto.builder()
 							.memberId("test")
 							.email("test@example.com")
@@ -31,17 +31,17 @@ public class MemberRepositoryTest {
 							.loginType(0)
 							.nickname("테스트계정")
 							.profileImg("/data/img.jpg")
-							.build();			
-		
+							.build();
+
 		Member member = Member.toEntity(memberDto);
-		
+
 		Member savedMember = memberRepository.save(member);
-		
-		
+
+
 		assertThat(savedMember);
 		assertThat(savedMember.getMemberNum()).isNotNull();
         assertThat(savedMember.getEmail()).isEqualTo("test@example.com");
 	}
-	
+
 	
 }
