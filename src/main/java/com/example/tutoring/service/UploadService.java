@@ -7,6 +7,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,7 +21,7 @@ public class UploadService {
 	S3Uploader s3Uploader;
 	
 	
-	public Map<String,Object> uploadProfileImg(MultipartFile image)
+	public ResponseEntity<Map<String,Object>> uploadProfileImg(MultipartFile image)
 	{
 		Map<String,Object> responseMap = new HashMap<String, Object>();
 		
@@ -39,14 +41,15 @@ public class UploadService {
             responseMap.put("status", 200);
             responseMap.put("url",s3Url);
             
+            return ResponseEntity.status(HttpStatus.OK).body(responseMap);
+            
             // 업로드된 파일의 URL 반환
         } catch (IOException e) {
             log.error("File upload failed: " + e.getMessage(), e);           
-            responseMap.put("status", 400);
-            responseMap.put("message", e.getMessage());
-          
+
+            responseMap.put("message", e.getMessage());            
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
         }
 				
-		return responseMap;
 	}
 }

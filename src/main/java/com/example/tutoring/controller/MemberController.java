@@ -4,6 +4,7 @@ import com.example.tutoring.service.MemberService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,7 +31,7 @@ public class MemberController {
 	// 회원가입 기능
 	@PostMapping("/signup")
 	@ResponseBody
-	public Map<String, Object> signUp (@RequestBody Map<String, Object> memberData) {
+	public ResponseEntity<Map<String, Object>> signUp (@RequestBody Map<String, Object> memberData) {
 		log.info("----/member/signup API 진입-----");
 		log.info("회원가입 요청 데이터: {}", memberData);
 
@@ -38,5 +39,7 @@ public class MemberController {
 		return memberService.signUp(memberData);
 	}
 
+	
+	
 	
 }
