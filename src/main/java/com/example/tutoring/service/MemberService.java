@@ -7,7 +7,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,6 +51,7 @@ public class MemberService {
             responseMap.put("status", 200);
         } catch (Exception e) {
             responseMap.put("status", 400);
+            responseMap.put("messsage", e.getMessage());
         }
 
         return responseMap;

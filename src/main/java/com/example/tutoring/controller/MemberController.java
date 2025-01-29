@@ -1,7 +1,5 @@
 package com.example.tutoring.controller;
 
-
-import com.example.tutoring.dto.MemberDto;
 import com.example.tutoring.service.MemberService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Map;
 
@@ -26,12 +25,11 @@ public class MemberController {
 	public void InitLoginPage()
 	{
 		log.info("로그인 페이지 진입");
-				
 	}	
 
 	// 회원가입 기능
 	@PostMapping("/signup")
-
+	@ResponseBody
 	public Map<String, Object> signUp (@RequestBody Map<String, Object> memberData) {
 		log.info("----/member/signup API 진입-----");
 		log.info("회원가입 요청 데이터: {}", memberData);
@@ -40,4 +38,5 @@ public class MemberController {
 		return memberService.signUp(memberData);
 	}
 
+	
 }
