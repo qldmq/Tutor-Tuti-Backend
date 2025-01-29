@@ -28,7 +28,7 @@ public class MemberServiceTest {
 
         // given
         Map<String, Object> memberData = new HashMap<>();
-        memberData.put("memberId", "testUser123123");
+        memberData.put("memberId", "testUser1234");
         memberData.put("email", "test@example.com");
         memberData.put("password", "password123");
         memberData.put("nickname", "nickname123");

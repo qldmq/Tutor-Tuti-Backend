@@ -31,12 +31,12 @@ public class MemberService {
         Map<String, Object> responseMap = new HashMap<>();
 
         try {
-//            // 중복 아이디가 있을 경우
-//            if (checkMemberId(memberData.get("memberId").toString())) {
-//                responseMap.put("status", 400);
-//                responseMap.put("message", "이미 존재하는 아이디입니다.");
-//                return responseMap;
-//            }
+            // 중복 아이디가 있을 경우
+            if (checkMemberId(memberData.get("memberId").toString())) {
+                responseMap.put("status", 400);
+                responseMap.put("message", "이미 존재하는 아이디입니다.");
+                return responseMap;
+            }
 
             MemberDto memberDto = MemberDto.builder()
                     .loginType(0)
@@ -57,11 +57,11 @@ public class MemberService {
         return responseMap;
     }
 
-//    // 아이디 중복 확인
-//    public boolean checkMemberId(String memberId) {
-//
-//        return memberRepository.existsByMemberId(memberId);
-//    }
+    // 아이디 중복 확인
+    public boolean checkMemberId(String memberId) {
+
+        return memberRepository.existsByMemberId(memberId);
+    }
 
     // 닉네임 생성
     public String createNick() {
