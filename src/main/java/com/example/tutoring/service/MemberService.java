@@ -3,6 +3,9 @@ package com.example.tutoring.service;
 import com.example.tutoring.dto.MemberDto;
 import com.example.tutoring.entity.Member;
 import com.example.tutoring.repository.MemberRepository;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,17 +27,16 @@ public class MemberService {
     }
 
     // 회원가입 처리
-    public Map<String, Object> signUp(Map<String, Object> memberData) {
+    public ResponseEntity<Map<String, Object>> signUp(Map<String, Object> memberData) {
 
         String newNick = createNick();
         Map<String, Object> responseMap = new HashMap<>();
 
         try {
             // 중복 아이디가 있을 경우
-            if (checkMemberId(memberData.get("memberId").toString())) {
-                responseMap.put("status", 400);
+            if (checkMemberId(memberData.get("memberId").toString())) {              
                 responseMap.put("message", "이미 존재하는 아이디입니다.");
-                return responseMap;
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
             }
 
             MemberDto memberDto = MemberDto.builder()
@@ -48,13 +50,13 @@ public class MemberService {
 
             Member member = Member.toEntity(memberDto);
             memberRepository.save(member);
-            responseMap.put("status", 200);
+            return ResponseEntity.status(HttpStatus.OK).body(responseMap);
         } catch (Exception e) {
-            responseMap.put("status", 400);
-            responseMap.put("messsage", e.getMessage());
+            responseMap.put("messsage", e.getMessage());          
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
         }
 
-        return responseMap;
+        
     }
 
     // 아이디 중복 확인
