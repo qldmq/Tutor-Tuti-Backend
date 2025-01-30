@@ -39,6 +39,23 @@ public class MemberController {
 		return memberService.signUp(memberData);
 	}
 
+	//로그인
+	@PostMapping("/login")
+	public ResponseEntity<Map<String,Object>> login(@RequestBody Map<String, Object> loginData){
+		
+		log.info("로그인 데이터 : "+loginData.toString());
+		
+		return memberService.login(loginData);
+		
+	}
+	
+	//토큰 만료 확인
+//	public ResponseEntity<Map<String, Object>> checkToken(@RequestBody Map<String,Object> tokenData){
+//		log.info("토큰 데이터 : "+tokenData.toString());
+//		
+//		return 
+//	}
+	
 	
 	
 	

@@ -1,9 +1,17 @@
 package com.example.tutoring.service;
 
 import com.example.tutoring.dto.MemberDto;
+import com.example.tutoring.dto.RefreshTokenDto;
 import com.example.tutoring.entity.Member;
+import com.example.tutoring.entity.RefreshToken;
+import com.example.tutoring.jwt.JwtTokenProvider;
 import com.example.tutoring.repository.MemberRepository;
+import com.example.tutoring.repository.RefreshTokenRespository;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,16 +24,13 @@ import java.util.Map;
 import java.util.Random;
 
 @Service
+@AllArgsConstructor
 public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-
-    public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
-        this.memberRepository = memberRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
-
+    private final JwtTokenProvider jwtTokenProvider;
+    
     // 회원가입 처리
     public ResponseEntity<Map<String, Object>> signUp(Map<String, Object> memberData) {
 
@@ -76,4 +81,41 @@ public class MemberService {
 
         return now.format(formatter) + randNick;
     }
+    
+    
+    //로그인
+    public ResponseEntity<Map<String,Object>>login(Map<String, Object> loginData)
+    {
+    	Map<String,Object> responseMap = new HashMap<String, Object>();
+    	
+    	String memberId = loginData.get("memberId").toString();
+    	String password = loginData.get("password").toString();
+    	
+    	try {
+    		Member member = memberRepository.findByMemberId(memberId);
+        	
+        	if(!passwordEncoder.matches(password, member.getPassword())) {
+        		responseMap.put("message", "아이디와 패스워드가 일치하지 않습니다.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
+        	}
+        	    	
+        	String memberNumString = Integer.toString(member.getMemberNum());
+        	
+        	String accessToken = jwtTokenProvider.createAccessToken(memberNumString);
+            String refreshToken = jwtTokenProvider.createRefreshToken(memberNumString);           
+                     
+             responseMap.put("access", accessToken);
+             responseMap.put("member",member);
+             return ResponseEntity.status(HttpStatus.OK).body(responseMap);
+        	
+    	}catch(Exception e)
+    	{
+    		responseMap.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
+    	}
+    
+    }
+    
+    
+    
 }
