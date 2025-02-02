@@ -12,10 +12,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import lombok.extern.slf4j.Slf4j;
+
+
+@Slf4j
 @Service
 public class UploadService {
-	
-	private final Logger log = LoggerFactory.getLogger(UploadService.class);
 	
 	@Autowired
 	S3Uploader s3Uploader;
