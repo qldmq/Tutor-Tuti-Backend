@@ -1,24 +1,24 @@
 package com.example.tutoring.controller;
 
 import com.example.tutoring.service.MemberService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Map;
 
+
+@Slf4j
 @Controller
 @RequestMapping("/member")
 public class MemberController {
 	
-	private final Logger log = LoggerFactory.getLogger(MemberController.class);
-
 	@Autowired
 	private MemberService memberService;
 
@@ -30,7 +30,6 @@ public class MemberController {
 
 	// 회원가입 기능
 	@PostMapping("/signup")
-	@ResponseBody
 	public ResponseEntity<Map<String, Object>> signUp (@RequestBody Map<String, Object> memberData) {
 		log.info("----/member/signup API 진입-----");
 		log.info("회원가입 요청 데이터: {}", memberData);
@@ -50,12 +49,22 @@ public class MemberController {
 	}
 	
 	//토큰 만료 확인
-//	public ResponseEntity<Map<String, Object>> checkToken(@RequestBody Map<String,Object> tokenData){
-//		log.info("토큰 데이터 : "+tokenData.toString());
-//		
-//		return 
-//	}
+	@PostMapping("/accessCheck")
+	public ResponseEntity<Map<String, Object>> accessCheck(@RequestBody Map<String,String> accessToken){
+		log.info("----/member/accessCheck API 진입----");
+		log.info("엑세스 토큰 : "+accessToken);
+		
+		return memberService.accessCheck(accessToken.get("access"));
+	}
 	
+	//토큰 재발급
+	@PostMapping("/reissue")
+	public ResponseEntity<Map<String, Object>> reissue(@RequestBody Map<String,String> accessToken){
+		log.info("----/member/reissue API 진입----");
+		log.info("엑세스 토큰 : "+accessToken);
+		
+		return memberService.reissue(accessToken.get("access"));
+	}
 	
 	
 	

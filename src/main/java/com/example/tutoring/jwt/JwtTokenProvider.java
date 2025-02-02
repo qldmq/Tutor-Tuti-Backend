@@ -3,12 +3,16 @@ package com.example.tutoring.jwt;
 import java.security.Key;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import com.example.tutoring.dto.RefreshTokenDto;
@@ -30,7 +34,7 @@ public class JwtTokenProvider {
 	private final Key key;
 	private static final long accessTokenValidity = 1000L * 60 * 30; // 30분
 	private static final long refreshTokenValidity = 1000L * 60 * 60 * 24 * 7; // 7일
-    //private final Map<String, String> refreshTokenStore = new ConcurrentHashMap<>();
+
 
     @Autowired
     private RefreshTokenRespository refreshTokenRespository;
@@ -41,7 +45,7 @@ public class JwtTokenProvider {
 		byte[] keyBytes = Decoders.BASE64.decode(secretKey);
 		this.key = Keys.hmacShaKeyFor(keyBytes);
 	}
-	
+		
 	public String createAccessToken(String memberNum) {
         return createToken(memberNum, accessTokenValidity);
     }
@@ -75,15 +79,27 @@ public class JwtTokenProvider {
 				.compact();
 	}
 	
-	public boolean isAccessTokenExpired(String token) {
+	public Map<String,Object> isAccessTokenExpired(String token) {
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		
         try {
+        	
             Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-            return claims.getExpiration().before(new Date());
+            log.info("토큰이 유효합니다.");
+            //return claims.getExpiration().before(new Date());
+            result.put("check",1);
         } catch (ExpiredJwtException e) {
-            return true; // 만료됨
+        	//만료됨
+        	result.put("check", 0);
+        	log.info("토큰이 만료되었습니다.");
         } catch (Exception e) {
-            return true; // 잘못된 토큰
+            result.put("check", 2);
+            log.info("유효하지 않은 토큰입니다.");
         }
+        
+        
+        return result;
     }
 	
 	
@@ -117,8 +133,20 @@ public class JwtTokenProvider {
 	}
 	
 	public String getMemberNum(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token)
-                .getBody().getSubject();
-    }
+	    try {
+	        return Jwts.parserBuilder()
+	            .setSigningKey(key)
+	            .build()
+	            .parseClaimsJws(token)
+	            .getBody()
+	            .getSubject();
+	    } catch (ExpiredJwtException e) {
+	        // 만료된 토큰의 클레임 추출
+	        return e.getClaims().getSubject();
+	    } catch (Exception e) {
+	        throw new RuntimeException("유효하지 않은 토큰입니다.");
+	    }
+	}
+
 		
 }
