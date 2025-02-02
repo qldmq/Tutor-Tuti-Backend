@@ -10,7 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
+import org.springframework.web.bind.annotation.*;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -31,13 +32,13 @@ public class MemberController {
 	// 회원가입 기능
 	@PostMapping("/signup")
 	public ResponseEntity<Map<String, Object>> signUp (@RequestBody Map<String, Object> memberData) {
+
 		log.info("----/member/signup API 진입-----");
 		log.info("회원가입 요청 데이터: {}", memberData);
 
 		// 회원가입 처리 서비스 호출
 		return memberService.signUp(memberData);
 	}
-
 	//로그인
 	@PostMapping("/login")
 	public ResponseEntity<Map<String,Object>> login(@RequestBody Map<String, Object> loginData){
@@ -66,6 +67,25 @@ public class MemberController {
 		return memberService.reissue(accessToken.get("access"));
 	}
 	
-	
-	
+    // 이메일 인증번호 요청 기능
+   	@PostMapping("/sendEmail")
+   	@ResponseBody
+	public ResponseEntity<Map<String, Object>> sendEmail(@RequestBody Map<String, Object> emailData) {
+
+		String email = emailData.get("email").toString();
+
+		log.info("이메일 요청 api 진입");
+
+		return memberService.sendEmail(email);
+
+	}
+
+	// 이메일 인증번호 확인
+	@GetMapping("/checkEmail")
+	public ResponseEntity<Map<String, Object>> checkEmail(@RequestParam int checkNum) {
+
+		log.info("인증번호 확인 api 진입");
+
+		return memberService.checkEmail(checkNum);
+	}
 }
