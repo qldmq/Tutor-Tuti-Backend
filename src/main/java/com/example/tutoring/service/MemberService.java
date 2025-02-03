@@ -266,16 +266,13 @@ public class MemberService {
     
     
     //로그아웃
-    public ResponseEntity<Map<String,Object>> logout(String accessToken) {
-    	
+    public ResponseEntity<Map<String,Object>> logout(String accessToken) {  	
     	 Map<String, Object> responseMap = new HashMap<>();
     	 try {
     		 
     		 if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
     		        String memberNum = jwtTokenProvider.getMemberNum(accessToken);
-
-    		        refreshTokenRespository.deleteById(Integer.parseInt(memberNum));
-    		        
+    		        refreshTokenRespository.deleteById(Integer.parseInt(memberNum));  
     		        responseMap.put("message", "로그아웃 성공");
 
     		        return ResponseEntity.status(HttpStatus.OK).body(responseMap);
