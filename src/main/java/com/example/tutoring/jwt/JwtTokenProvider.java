@@ -35,7 +35,6 @@ public class JwtTokenProvider {
 	private static final long accessTokenValidity = 1000L * 60 * 30; // 30분
 	private static final long refreshTokenValidity = 1000L * 60 * 60 * 24 * 7; // 7일
 
-
     @Autowired
     private RefreshTokenRespository refreshTokenRespository;
         
@@ -104,7 +103,7 @@ public class JwtTokenProvider {
 	
 	
 	public boolean isRefreshTokenExpired(Integer memberNum) {
-        Optional<RefreshToken> storedToken = refreshTokenRespository.findById(memberNum);
+        Optional<RefreshToken> storedToken = refreshTokenRespository.findById(memberNum);    
         return storedToken.map(token -> token.getExpiryDate().isBefore(Instant.now())).orElse(true);
     }
 	
@@ -112,6 +111,7 @@ public class JwtTokenProvider {
 
         if (isRefreshTokenExpired(memberNum)) {
             throw new RuntimeException("Refresh Token이 만료되었습니다.");
+            
         }
 
         Optional<RefreshToken> storedToken = refreshTokenRespository.findById(memberNum);

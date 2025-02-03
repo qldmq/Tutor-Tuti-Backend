@@ -153,8 +153,8 @@ public class MemberService {
     
     }
     
-    //엑세스 토큰 체크
-    public ResponseEntity<Map<String,Object>> accessCheck(String accessToken)
+    //토큰 체크
+    public ResponseEntity<Map<String,Object>> tokenCheck(String accessToken)
     {
     	Map<String,Object> responseMap = new HashMap<String,Object>();
     	
@@ -165,12 +165,13 @@ public class MemberService {
     		//엑세스 토큰이 만료되었을 경우
         	if(check == 0)
         	{
-        		responseMap.put("check", 0);
+        		int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));   		
+        		responseMap.put("access", jwtTokenProvider.reissueAccessToken(memberNum));
         		return ResponseEntity.status(HttpStatus.OK).body(responseMap);
         	}
         	//엑세스 토큰이 만료되지 않았을 경우
         	else if(check == 1) {
-        		responseMap.put("check", 1);
+        		responseMap.put("message", "엑세스 토큰이 유효합니다.");
         		return ResponseEntity.status(HttpStatus.OK).body(responseMap);
         	}  	   
         	else{
@@ -185,26 +186,6 @@ public class MemberService {
     	}    	   	    	
     	
     }
-    
-    //토큰 재발급
-    public ResponseEntity<Map<String,Object>> reissue(String accessToken)
-    {
-    	Map<String,Object> responseMap = new HashMap<String, Object>();
-    	   	
-    	try {
-    		int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));   		
-    		responseMap.put("access", jwtTokenProvider.reissueAccessToken(memberNum));
-    		return ResponseEntity.status(HttpStatus.OK).body(responseMap);
-    		
-    	}catch(Exception e)
-    	{
-    		responseMap.put("message",e.getMessage());
-    		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
-    	}
-    	   	
-    }
-    
-
 
 
     // 인증번호 전송
