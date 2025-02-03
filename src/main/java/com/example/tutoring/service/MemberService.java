@@ -152,7 +152,7 @@ public class MemberService {
         	
     	}catch(Exception e)
     	{
-    		responseMap.put("message", e.getMessage());
+    		responseMap.put("message", "아이디 또는 비밀번호가 일치하지 않습니다.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
     	}
     
