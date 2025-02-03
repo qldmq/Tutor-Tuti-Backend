@@ -30,6 +30,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletRequest;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -45,6 +47,9 @@ public class MemberService {
 	
 	@Autowired
     private MemberRepository memberRepository;
+	
+	@Autowired
+	private RefreshTokenRespository refreshTokenRespository;
 	
 	@Autowired
     private JavaMailSender mailSender;  
@@ -258,4 +263,32 @@ public class MemberService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
         }
     }
+    
+    
+    //로그아웃
+    public ResponseEntity<Map<String,Object>> logout(String accessToken) {
+    	
+    	 Map<String, Object> responseMap = new HashMap<>();
+    	 try {
+    		 
+    		 if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
+    		        String memberNum = jwtTokenProvider.getMemberNum(accessToken);
+
+    		        refreshTokenRespository.deleteById(Integer.parseInt(memberNum));
+    		        
+    		        responseMap.put("message", "로그아웃 성공");
+
+    		        return ResponseEntity.status(HttpStatus.OK).body(responseMap);
+    		    }
+    		    
+    		    responseMap.put("message", "엑세스 토큰이 유효하지 않습니다.");
+    	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
+    		 
+    	 }catch(Exception e)
+    	 {
+    		 responseMap.put("message", e.getMessage());
+ 	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
+    	 }
+	    
+	}
 }

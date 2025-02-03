@@ -82,4 +82,15 @@ public class MemberController {
 
 		return memberService.checkEmail(checkNum);
 	}
+	
+	//로그아웃
+	@PostMapping("/logout")
+	public ResponseEntity<Map<String,Object>> logout(HttpServletRequest request) {
+		log.info("----/member/logout API 진입----");
+		String accessToken = request.getHeader("Bearer");
+		log.info("엑세스 토큰 : "+accessToken);
+		
+	    return memberService.logout(accessToken);
+	}
+
 }
