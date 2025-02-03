@@ -164,21 +164,7 @@ public class MemberService {
     // 아이디 찾기
     public ResponseEntity<Map<String, Object>> findId(String email) {
 
-        log.info("안녕하세요{}", email);
-
-
-        String testEmail= email;
-        Optional<Member> memberOptional = memberRepository.findByEmail(testEmail);
-
-        log.info("testemail{}", testEmail);
-
-
-        if (memberOptional.isEmpty()) {
-            log.info("해당 이메일로 조회된 회원이 없음: {}", email);
-        } else {
-            log.info("조회된 회원 정보: {}", memberOptional.get());
-        }
-
+        Optional<Member> memberOptional = memberRepository.findByEmail(email);
 
         Map<String, Object> responseMap = new HashMap<>();
 
