@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 
 @Slf4j
 @Controller
@@ -49,24 +51,16 @@ public class MemberController {
 		
 	}
 	
-	//토큰 만료 확인
-	@PostMapping("/accessCheck")
-	public ResponseEntity<Map<String, Object>> accessCheck(@RequestBody Map<String,String> accessToken){
-		log.info("----/member/accessCheck API 진입----");
+	//토큰 검사
+	@PostMapping("/tokenCheck")
+	public ResponseEntity<Map<String, Object>> tokenCheck(HttpServletRequest request){
+		log.info("----/member/tokenCheck API 진입----");
+		String accessToken = request.getHeader("Bearer");
 		log.info("엑세스 토큰 : "+accessToken);
 		
-		return memberService.accessCheck(accessToken.get("access"));
+		return memberService.tokenCheck(accessToken);
 	}
-	
-	//토큰 재발급
-	@PostMapping("/reissue")
-	public ResponseEntity<Map<String, Object>> reissue(@RequestBody Map<String,String> accessToken){
-		log.info("----/member/reissue API 진입----");
-		log.info("엑세스 토큰 : "+accessToken);
 		
-		return memberService.reissue(accessToken.get("access"));
-	}
-	
     // 이메일 인증번호 요청 기능
    	@PostMapping("/sendEmail")
    	@ResponseBody
