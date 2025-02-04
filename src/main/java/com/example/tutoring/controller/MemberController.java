@@ -82,7 +82,20 @@ public class MemberController {
 
 		return memberService.checkEmail(checkNum);
 	}
-	
+
+	// 아이디 찾기
+	@PostMapping("/findId")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> findId(@RequestBody Map<String, Object> emailData) {
+		
+		log.info("아이디 찾기 api 진입");
+		log.info(emailData.toString());
+
+		String email = emailData.get("email").toString();
+
+		return memberService.findId(email);
+	}
+
 	//로그아웃
 	@PostMapping("/logout")
 	public ResponseEntity<Map<String,Object>> logout(HttpServletRequest request) {

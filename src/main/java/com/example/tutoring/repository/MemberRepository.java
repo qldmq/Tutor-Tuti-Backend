@@ -20,5 +20,6 @@ public interface MemberRepository extends JpaRepository<Member, Long>{
     @Query("SELECT COUNT(m) > 0 FROM Member m WHERE m.email = :email")
     boolean existsByEmail(@Param("email") String email);
 
-
+    // 아이디 찾기
+    Optional<Member> findByEmail(String email);
 }

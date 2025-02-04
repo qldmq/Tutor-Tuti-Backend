@@ -9,6 +9,7 @@ import com.example.tutoring.jwt.JwtTokenProvider;
 import com.example.tutoring.repository.MemberRepository;
 import com.example.tutoring.repository.RefreshTokenRespository;
 
+import lombok.extern.slf4j.Slf4j;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -36,8 +37,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberService {
@@ -192,7 +195,6 @@ public class MemberService {
     	
     }
 
-
     // 인증번호 전송
     public ResponseEntity<Map<String, Object>> sendEmail(@RequestBody String email) {
 
@@ -207,7 +209,7 @@ public class MemberService {
             // 인증번호 생성
             Random random = new Random();
             int checkNum = 100000 + random.nextInt(900000);
-            System.out.println(checkNum);
+            log.info("{}", checkNum);
 
             // 인증번호 전송
             sendCheckNum(email, checkNum);
@@ -229,7 +231,6 @@ public class MemberService {
                 "<div class='content' style='font-size: 16px; color: #555; margin-bottom: 20px;'>" +
                 "<p>안녕하세요! 아래 인증번호를 입력하여 이메일 인증을 완료해 주세요.</p>" +
                 "<p><strong>인증번호: " + checkNum + "</strong></p>" +
-                "<p>위의 인증번호를 사이트에 입력하면 회원가입이 완료됩니다.</p>" +
                 "<p>감사합니다!<br> - Tutor-Tuti 팀</p>" +
                 "</div>" +
                 "<div class='footer' style='text-align: center; font-size: 14px; color: #888;'>이 이메일은 자동으로 발송되었습니다. <br>문의사항이 있으시면 support@tutor-tuti.com 으로 연락주세요.</div>" +
@@ -262,6 +263,35 @@ public class MemberService {
             responseMap.put("message", "인증번호가 다릅니다.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
         }
+    }
+
+    // 아이디 찾기
+    public ResponseEntity<Map<String, Object>> findId(String email) {
+
+        Optional<Member> memberOptional = memberRepository.findByEmail(email);
+
+        Map<String, Object> responseMap = new HashMap<>();
+
+        if (memberOptional.isPresent()) {
+            String memberId = memberOptional.get().getMemberId();
+            String maskedId = maskedMemberId(memberId); // 가려진 아이디 생성
+
+            responseMap.put("memberId", maskedId);
+            return ResponseEntity.status(HttpStatus.OK).body(responseMap);
+        } else {
+            responseMap.put("message", "해당하는 유저가 없습니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
+        }
+    }
+
+    // 아이디 가림 처리
+    public String maskedMemberId(String memberId) {
+
+        String prefix = memberId.substring(0, 2); // 앞 2글자
+        String suffix = memberId.substring(memberId.length() - 2); // 뒤 2글자
+        String masked = "*".repeat(memberId.length() - 4); // 중간 부분 *
+
+        return prefix + masked + suffix;
     }
     
     
