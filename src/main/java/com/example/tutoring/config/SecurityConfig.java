@@ -12,10 +12,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import com.example.tutoring.jwt.CustomUserDetailsService;
 import com.example.tutoring.jwt.JwtAuthenticationFilter;
-import com.example.tutoring.jwt.JwtTokenProvider;
+import com.example.tutoring.oauth2.NaverUserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,6 +24,8 @@ public class SecurityConfig {
 
 	@Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
+	
+	private final NaverUserService naverUserService;
 	
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception{
@@ -43,7 +43,10 @@ public class SecurityConfig {
                 //.antMatchers("/member/**").hasRole("USER")
                 .antMatchers("/member/**").permitAll()
                 .and() 
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .oauth2Login()
+                .userInfoEndpoint()
+                .userService(naverUserService);
 
         return http.build();
     }

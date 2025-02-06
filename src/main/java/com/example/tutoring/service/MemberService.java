@@ -6,6 +6,7 @@ import com.example.tutoring.entity.Member;
 import com.example.tutoring.entity.RefreshToken;
 import com.example.tutoring.jwt.CustomUserDetails;
 import com.example.tutoring.jwt.JwtTokenProvider;
+import com.example.tutoring.oauth2.NaverUserService;
 import com.example.tutoring.repository.MemberRepository;
 import com.example.tutoring.repository.RefreshTokenRespository;
 
@@ -27,8 +28,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
@@ -53,6 +57,9 @@ public class MemberService {
 	
 	@Autowired
 	private RefreshTokenRespository refreshTokenRespository;
+	
+	@Autowired
+	private NaverUserService naverUserService;
 	
 	@Autowired
     private JavaMailSender mailSender;  
@@ -318,4 +325,24 @@ public class MemberService {
     	 }
 	    
 	}
+    
+    
+    //네이버 로그인
+    public ResponseEntity<Map<String,Object>> naverLogin(Map<String,Object> map)
+    {
+    	Map<String, Object> responseMap = new HashMap<>();
+    	
+    	
+    	log.info("MAP : " + map.toString());
+    	//Member member = memberRepository.findByMemberId((String)oAuth2User.getAttribute("email"));
+    	
+    	//String email = oAuth2User.getAttributes().get("email").toString();
+    	
+    	//log.info("네이버 로그인 계정 :"+ email);
+    	
+    	//OAuth2User oAuth2User = naverUserService.loadUser(token);
+    	
+       	return ResponseEntity.status(HttpStatus.OK).body(responseMap);
+    }
+    
 }
