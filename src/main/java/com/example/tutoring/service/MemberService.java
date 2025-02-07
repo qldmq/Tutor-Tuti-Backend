@@ -1,19 +1,13 @@
 package com.example.tutoring.service;
 
 import com.example.tutoring.dto.MemberDto;
-import com.example.tutoring.dto.RefreshTokenDto;
 import com.example.tutoring.entity.Member;
-import com.example.tutoring.entity.RefreshToken;
 import com.example.tutoring.jwt.CustomUserDetails;
 import com.example.tutoring.jwt.JwtTokenProvider;
 import com.example.tutoring.repository.MemberRepository;
 import com.example.tutoring.repository.RefreshTokenRespository;
-
 import lombok.extern.slf4j.Slf4j;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,18 +15,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
-
 import javax.mail.internet.MimeMessage;
-import javax.servlet.http.HttpServletRequest;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -53,7 +41,7 @@ public class MemberService {
 	
 	@Autowired
 	private RefreshTokenRespository refreshTokenRespository;
-	
+		
 	@Autowired
     private JavaMailSender mailSender;  
    
@@ -149,6 +137,7 @@ public class MemberService {
              responseMap.put("profileImg", member.getProfileImg());
              responseMap.put("introduction", member.getIntroduction());
              responseMap.put("access", accessToken);
+             responseMap.put("hasNotice", false);
              
              
              return ResponseEntity.status(HttpStatus.OK).body(responseMap);
@@ -317,5 +306,6 @@ public class MemberService {
  	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
     	 }
 	    
-	}
+	}          
+    
 }
