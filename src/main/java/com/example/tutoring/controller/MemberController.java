@@ -1,19 +1,12 @@
 package com.example.tutoring.controller;
 
 import com.example.tutoring.service.MemberService;
-
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import java.util.HashMap;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
 
@@ -49,14 +42,12 @@ public class MemberController {
 		
 		return memberService.login(loginData);
 		
-	}
+	}	
 	
-	//네이버 로그인
 	@GetMapping("/naverLogin")
-	public ResponseEntity<Map<String,Object>> naverLogin(@RequestParam Map<String,Object> map){
+	public void naverLogin(Map<String,Object> data){
 		log.info("네이버 로그인");
-		
-		return memberService.naverLogin(map);
+		log.info("값 : "+data.toString());
 	}
 	
 	//토큰 검사

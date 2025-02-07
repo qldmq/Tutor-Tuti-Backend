@@ -2,46 +2,45 @@ package com.example.tutoring.oauth2;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import com.example.tutoring.dto.MemberDto;
 import com.example.tutoring.entity.Member;
-import com.example.tutoring.jwt.JwtTokenProvider;
 import com.example.tutoring.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
 
-
 @Service
 @RequiredArgsConstructor
-public class NaverUserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User>{
-	
-		
-	@Autowired
-	JwtTokenProvider jwtTokenProvider;
-	
-	@Autowired
-	MemberRepository memberRepository;
-	
-	@Override
-	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {		
-		OAuth2User oAuth2User = new DefaultOAuth2UserService().loadUser(userRequest);
-		Map<String,Object> attributes = oAuth2User.getAttributes();
-		Map<String,Object> response = (Map<String,Object>) attributes.get("response");
-		
-		String email = (String)response.get("email");
-		
-		Optional<Member> naverMember = memberRepository.findByNaverMember(email);
+public class CustomOAuth2UserService extends DefaultOAuth2UserService {
+
+    private final MemberRepository memberRepository;
+
+    @Override
+    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        OAuth2User oAuth2User = super.loadUser(userRequest);
+
+        String registrationId = userRequest.getClientRegistration().getRegistrationId();
+        String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
+                .getUserInfoEndpoint().getUserNameAttributeName();
+
+        Map<String, Object> attributes = oAuth2User.getAttributes();
+        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+
+        String email = (String) response.get("email");
+
+        Optional<Member> naverMember = memberRepository.findByNaverMember(email);
 		
 		Member member; 
 		
@@ -54,7 +53,7 @@ public class NaverUserService implements OAuth2UserService<OAuth2UserRequest, OA
 		else 
 		{
 			 MemberDto memberDto = MemberDto.builder()
-	                    .loginType(0)
+	                    .loginType(2)
 	                    .memberId(email)
 	                    .email(email)
 	                    .password("naverPw")
@@ -65,16 +64,14 @@ public class NaverUserService implements OAuth2UserService<OAuth2UserRequest, OA
 			
 			memberRepository.saveAndFlush(member);
 		}
-		
-		String accessToken = jwtTokenProvider.createAccessToken(Integer.toString(member.getMemberNum()));		
-				
-		
-		return new CustomerOAuth2User(oAuth2User, accessToken, member);
-	}
+              
 
-	
-	// 닉네임 생성
-	private String createNick() {
+        return new DefaultOAuth2User(Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
+                attributes, userNameAttributeName);
+    }
+    
+    
+    private String createNick() {
 
         LocalDate now = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -84,6 +81,4 @@ public class NaverUserService implements OAuth2UserService<OAuth2UserRequest, OA
 
         return now.format(formatter) + randNick;
     }  
-	
-	
 }
