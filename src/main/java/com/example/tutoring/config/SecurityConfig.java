@@ -12,8 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import com.example.tutoring.jwt.JwtAuthenticationFilter;
-import com.example.tutoring.oauth2.CustomOAuth2UserService;
-import com.example.tutoring.oauth2.OAuth2LoginSuccessHandler;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -22,8 +20,6 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;	
-	private final CustomOAuth2UserService customOAuth2UserService;	
-	private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 	
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception{
@@ -43,8 +39,6 @@ public class SecurityConfig {
          .anyRequest().authenticated()
          .and()
          .oauth2Login()
-         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
-         .successHandler(oAuth2LoginSuccessHandler)
          .and()
          .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
      
