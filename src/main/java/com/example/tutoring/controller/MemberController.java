@@ -103,7 +103,7 @@ public class MemberController {
 		log.info("비밀번호 찾기 api 진입");
 		log.info(memberIdData.toString());
 
-		String memberId	= memberIdData.toString();
+		String memberId	= memberIdData.get("memberId").toString();
 
 		return memberService.findPassword(memberId);
 	}

@@ -276,9 +276,9 @@ public class MemberService {
     }
 
     // 비밀번호 찾기
-    public ResponseEntity<Map<String, Object>> findPassword(String memberID) {
+    public ResponseEntity<Map<String, Object>> findPassword(String memberId) {
 
-        Member member = memberRepository.findByMemberId(memberID);
+        Member member = memberRepository.findByMemberId(memberId);
 
         Map<String, Object> responseMap = new HashMap<>();
         
