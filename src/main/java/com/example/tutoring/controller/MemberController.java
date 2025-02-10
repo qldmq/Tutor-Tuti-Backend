@@ -104,5 +104,15 @@ public class MemberController {
 		
 	    return memberService.logout(accessToken);
 	}
+	
+	//회원탈퇴
+	@DeleteMapping("/outMember")
+	public ResponseEntity<Map<String,Object>> outMember(HttpServletRequest request) {
+		log.info("----/member/outMember API 진입----");
+		String accessToken = request.getHeader("Bearer");
+		log.info("엑세스 토큰 : "+accessToken);
+		
+		return memberService.outMember(accessToken);
+	}
 
 }

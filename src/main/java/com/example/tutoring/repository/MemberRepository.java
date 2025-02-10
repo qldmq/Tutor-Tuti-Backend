@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface MemberRepository extends JpaRepository<Member, Long>{
+public interface MemberRepository extends JpaRepository<Member, Integer>{
 
     @Query("SELECT COUNT(m) > 0 FROM Member m WHERE m.memberId = :memberId")
     boolean existsByMemberId(@Param("memberId") String memberId);
