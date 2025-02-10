@@ -275,6 +275,21 @@ public class MemberService {
         }
     }
 
+    // 비밀번호 찾기
+    public ResponseEntity<Map<String, Object>> findPassword(String memberID) {
+
+        Member member = memberRepository.findByMemberId(memberID);
+
+        Map<String, Object> responseMap = new HashMap<>();
+        
+        if (member != null) {
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } else {
+            responseMap.put("message", "해당하는 유저가 없습니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
+        }
+    }
+
     // 아이디 가림 처리
     public String maskedMemberId(String memberId) {
 
