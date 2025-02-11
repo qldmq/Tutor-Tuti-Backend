@@ -41,7 +41,7 @@ public class SecurityConfig {
          .anyRequest().authenticated()
          .and()
          .oauth2Login()
-         .defaultSuccessUrl("http://localhost:3000/")
+         .defaultSuccessUrl("http://localhost:3000/loading")
          .and()        
          .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
      
