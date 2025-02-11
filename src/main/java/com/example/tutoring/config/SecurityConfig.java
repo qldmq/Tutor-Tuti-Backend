@@ -41,6 +41,7 @@ public class SecurityConfig {
          .anyRequest().authenticated()
          .and()
          .oauth2Login()
+         .defaultSuccessUrl("http://localhost:3000/")
          .and()        
          .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
      
