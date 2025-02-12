@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -41,8 +42,7 @@ public class MemberServiceTest {
         // then
         log.info("message: {}", response.get("message"));
     }
-
-
+    
     // 이메일 전송 테스트
     @Test
     public void 이메일_인증번호_전송() {
@@ -102,5 +102,20 @@ public class MemberServiceTest {
         // then
         String memberId = (String) response.get("memberId");
         log.info("찾은 아이디: {}", memberId); // 아이디 출력
+    }
+
+    @Test
+    public void 비밀번호_찾기_테스트() {
+
+        String testMemberId = "testUser1234";
+
+        ResponseEntity<Map<String, Object>> responseEntity = memberService.findPassword(testMemberId);
+
+        // 상태 코드가 200 OK인지 확인
+        if (responseEntity.getStatusCode() == HttpStatus.OK) {
+            log.info("상태 코드: 200");
+        } else {
+            log.info("상태 코드: {}", responseEntity.getBody());
+        }
     }
 }

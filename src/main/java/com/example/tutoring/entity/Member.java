@@ -45,7 +45,7 @@ public class Member {
 
     @Column(name = "introduction")
     private String introduction;
-    
+
     public static Member toEntity(MemberDto dto) {
         return Member.builder()
                 .memberId(dto.getMemberId())

@@ -95,6 +95,19 @@ public class MemberController {
 		return memberService.findId(email);
 	}
 
+	// 비밀번호 찾기
+	@PostMapping("/findPassword")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> findPassword(@RequestBody Map<String, Object> memberIdData) {
+
+		log.info("비밀번호 찾기 api 진입");
+		log.info(memberIdData.toString());
+
+		String memberId	= memberIdData.get("memberId").toString();
+
+		return memberService.findPassword(memberId);
+	}
+
 	//로그아웃
 	@PostMapping("/logout")
 	public ResponseEntity<Map<String,Object>> logout(HttpServletRequest request) {
