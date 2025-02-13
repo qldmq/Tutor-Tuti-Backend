@@ -107,6 +107,19 @@ public class MemberController {
 
 		return memberService.findPassword(memberId);
 	}
+	
+	// 비밀번호 재설정
+	@PatchMapping("/pwdNonuser")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> pwdNonuser(@RequestBody Map<String, Object> updData) {
+
+		log.info("비밀번호 재설정 api 진입");
+
+		String memberId = updData.get("memberId").toString();
+		String password = updData.get("password").toString();
+
+		return memberService.pwdNonuser(memberId, password);
+	}
 
 	//로그아웃
 	@PostMapping("/logout")
