@@ -303,7 +303,7 @@ public class MemberService {
         if (member == null) {
             responseMap.put("message", "해당하는 유저가 없습니다.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
-        } else if (member.getPassword().equals(password)) {
+        } else if (passwordEncoder.matches(password, member.getPassword())) {
             responseMap.put("message", "기존 비밀번호와 동일합니다.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
         } else {
