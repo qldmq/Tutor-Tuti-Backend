@@ -17,7 +17,7 @@ public interface MemberRepository extends JpaRepository<Member, Integer>{
     Member findByMemberId(String memberId);
 
     // 이메일 중복 검사
-    @Query("SELECT COUNT(m) > 0 FROM Member m WHERE m.email = :email")
+    @Query("SELECT COUNT(m) > 0 FROM Member m WHERE m.email = :email AND m.loginType = 0")
     boolean existsByEmail(@Param("email") String email);
 
     // 아이디 찾기
