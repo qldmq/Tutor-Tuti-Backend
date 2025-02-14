@@ -46,8 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     String newAccessToken = jwtTokenProvider.reissueAccessToken(Integer.parseInt(memberNum));
                     response.setHeader("newAccessToken", newAccessToken); 
                 } catch (RuntimeException e) {
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);  
-                    response.getWriter().write("리프레시 토큰이 만료되었습니다. 다시 로그인해주세요.");
+                	sendJsonErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "리프레시 토큰이 만료되었습니다. 다시 로그인해주세요.");
                     return;
                 }
             } else if (jwtTokenProvider.validateToken(token)) {  
@@ -75,5 +74,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         return null;
     }
+    
+    private void sendJsonErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
+        response.setStatus(status);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        String jsonResponse = String.format("{\"message\": \"%s\"}", message);
+        response.getWriter().write(jsonResponse);
+    }
+    
 }
 

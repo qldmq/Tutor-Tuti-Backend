@@ -283,6 +283,27 @@ public class MemberService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
         }
     }
+    
+    // 비밀번호 재설정
+    public ResponseEntity<Map<String, Object>> pwdNonuser(String memberId, String password) {
+
+        Map<String, Object> responseMap = new HashMap<>();
+
+        Member member = memberRepository.findByMemberId(memberId);
+
+        if (member == null) {
+            responseMap.put("message", "해당하는 유저가 없습니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
+        } else if (passwordEncoder.matches(password, member.getPassword())) {
+            responseMap.put("message", "기존 비밀번호와 동일합니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
+        } else {
+            String encodedPassword = passwordEncoder.encode(password);
+            member.setPassword(encodedPassword );
+            memberRepository.save(member);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
+    }
 
     // 아이디 가림 처리
     public String maskedMemberId(String memberId) {

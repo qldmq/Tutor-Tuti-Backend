@@ -22,18 +22,20 @@ public class NoticeDto {
 
 	private Integer noticeNum;	
 	private Integer memberNum;	
-	private String title;	
 	private String content;	
 	private Date createTime;
+	private Integer likeCnt;
+	private Integer disLikeCnt;
 	
 	public static NoticeDto toDto(Notice entity)
 	{
 		return NoticeDto.builder()
 				.noticeNum(entity.getNoticeNum())
 				.memberNum(entity.getMemberNum())
-				.title(entity.getTitle())
 				.content(entity.getContent())
 				.createTime(entity.getCreateTime())
+				.likeCnt(entity.getLikeCnt())
+				.disLikeCnt(entity.getDisLikeCnt())
 				.build();
 	}
 }
