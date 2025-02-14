@@ -31,15 +31,18 @@ public class Notice {
 	
 	@Column(name="memberNum", nullable=false)
 	private Integer memberNum;
-	
-	@Column(name="title")
-	private String title;
-	
+		
 	@Column(name="content")
 	private String content;
 	
 	@Column(name="createTime")
 	private Date createTime;
+	
+	@Column(name="likeCnt")
+	private Integer likeCnt;
+	
+	@Column(name="disLikeCnt")
+	private Integer disLikeCnt;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memberNum", referencedColumnName = "memberNum", insertable = false, updatable = false)
@@ -50,9 +53,10 @@ public class Notice {
 		return Notice.builder()
 				.noticeNum(dto.getNoticeNum())
 				.memberNum(dto.getMemberNum())
-				.title(dto.getTitle())
 				.content(dto.getContent())
 				.createTime(dto.getCreateTime())
+				.likeCnt(dto.getLikeCnt())
+				.disLikeCnt(dto.getDisLikeCnt())
 				.build();
 	}
 }

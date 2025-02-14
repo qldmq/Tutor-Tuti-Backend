@@ -34,7 +34,7 @@ public class JwtTokenProvider {
 	private final Key key;
 	private static final long accessTokenValidity = 1000L * 60 * 30; // 30분
 	private static final long refreshTokenValidity = 1000L * 60 * 60 * 24 * 7; // 7일
-
+	
     @Autowired
     private RefreshTokenRespository refreshTokenRespository;
         
@@ -51,7 +51,7 @@ public class JwtTokenProvider {
 
     public String createRefreshToken(String memberNum) {
         String refreshToken = createToken(memberNum, refreshTokenValidity);
-        Instant expiryDate = Instant.now().plusSeconds(60 * 60 * 24 * 7); // 7일 후 만료
+        Instant expiryDate = Instant.now().plusSeconds(refreshTokenValidity / 1000); 
 
         RefreshTokenDto refreshTokenDto = RefreshTokenDto.builder()
                 .memberNum(Integer.parseInt(memberNum))

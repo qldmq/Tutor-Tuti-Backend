@@ -122,15 +122,10 @@ public class MemberService {
 	        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 	        Member member = customUserDetails.getMember();
 
-        	if(!passwordEncoder.matches(password, member.getPassword())) {
-        		responseMap.put("message", "아이디와 패스워드가 일치하지 않습니다.");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
-        	}
-
         	String memberNumString = Integer.toString(member.getMemberNum());
 
         	String accessToken = jwtTokenProvider.createAccessToken(memberNumString);
-            String refreshToken = jwtTokenProvider.createRefreshToken(memberNumString);
+        	jwtTokenProvider.createRefreshToken(memberNumString);
 
              responseMap.put("memberNum", member.getMemberNum());
              responseMap.put("loginType", member.getLoginType());
