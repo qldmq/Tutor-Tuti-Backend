@@ -40,10 +40,11 @@ public class NoticeRepositoryTest {
         assertThat(savedMember).isPresent();
 
         NoticeDto noticeDto = NoticeDto.builder()
-                .memberNum(1) 
-                .title("공지 제목")
+                .memberNum(1)               
                 .content("공지 내용")
                 .createTime(new Date())
+                .likeCnt(50)
+                .disLikeCnt(10)
                 .build();
 
 
@@ -51,7 +52,6 @@ public class NoticeRepositoryTest {
 
         assertThat(savedNotice).isNotNull();
         assertThat(savedNotice.getNoticeNum()).isNotNull();
-        assertThat(savedNotice.getTitle()).isEqualTo("공지 제목");
         assertThat(savedNotice.getContent()).isEqualTo("공지 내용");
         assertThat(savedNotice.getMemberNum()).isEqualTo(savedMember.get().getMemberNum());
     }

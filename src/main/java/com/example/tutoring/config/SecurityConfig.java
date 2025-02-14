@@ -36,7 +36,7 @@ public class SecurityConfig {
          .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
          .and()
          .authorizeHttpRequests()
-         .antMatchers("/member/**","/oauth/**","/access-denied","/image/**","/notice/**","/follow/**").permitAll()
+         .antMatchers("/member/**","/oauth/**","/access-denied","/image/**","/notice/**","/follow/**","/signaling/**").permitAll()
          //.antMatchers("/image/**","/notice/**","/follow/**").hasRole("USER")
          .anyRequest().authenticated()
          .and()
