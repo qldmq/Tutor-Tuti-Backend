@@ -23,7 +23,7 @@ public class UploadService {
 	S3Uploader s3Uploader;
 	
 	
-	public ResponseEntity<Map<String,Object>> uploadProfileImg(MultipartFile image)
+	public Map<String,Object> uploadProfileImg(MultipartFile image)
 	{
 		Map<String,Object> responseMap = new HashMap<String, Object>();
 		
@@ -43,14 +43,14 @@ public class UploadService {
             responseMap.put("status", 200);
             responseMap.put("url",s3Url);
             
-            return ResponseEntity.status(HttpStatus.OK).body(responseMap);
+            return responseMap;
             
             // 업로드된 파일의 URL 반환
         } catch (IOException e) {
             log.error("File upload failed: " + e.getMessage(), e);           
 
             responseMap.put("message", e.getMessage());            
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
+            return responseMap;
         }
 				
 	}
