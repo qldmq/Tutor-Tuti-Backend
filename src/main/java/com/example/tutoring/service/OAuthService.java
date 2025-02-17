@@ -194,6 +194,7 @@ public class OAuthService {
 
 			// 4. JWT 토큰 생성
 			String accessToken = jwtTokenProvider.createAccessToken(Integer.toString(member.getMemberNum()));
+			jwtTokenProvider.createRefreshToken(Integer.toString(member.getMemberNum()));
 
 			// 5. 반환 데이터 설정
 			responseMap.put("memberNum", member.getMemberNum());
