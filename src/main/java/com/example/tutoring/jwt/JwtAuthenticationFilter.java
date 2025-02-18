@@ -45,6 +45,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 try {
                     String newAccessToken = jwtTokenProvider.reissueAccessToken(Integer.parseInt(memberNum));
                     response.setHeader("newAccessToken", newAccessToken); 
+                    
+                    MutableHttpServletRequest mutableRequest = new MutableHttpServletRequest(request);
+                    mutableRequest.putHeader("Authorization", "Bearer " + newAccessToken);        
+                    
+                    filterChain.doFilter(mutableRequest, response);
+                    return;
+                                                         
                 } catch (RuntimeException e) {
                 	sendJsonErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "리프레시 토큰이 만료되었습니다. 다시 로그인해주세요.");
                     return;
