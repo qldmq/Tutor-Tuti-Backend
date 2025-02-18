@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtTokenProvider {
 
 	private final Key key;
-	private static final long accessTokenValidity = 1000L * 30; // 30분
+	private static final long accessTokenValidity = 1000L * 60 * 30; // 30분
 	private static final long refreshTokenValidity = 1000L * 60 * 60 * 24 * 7; // 7일
 	
     @Autowired
