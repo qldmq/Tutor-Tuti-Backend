@@ -51,6 +51,7 @@ public class ProfileService {
 			{
 				dto.setProfileImg(result.get("url").toString());			
 				memberRepository.save(Member.toEntity(dto));
+				responseMap.put("profileImg", dto.getProfileImg());
 				return ResponseEntity.status(HttpStatus.OK).body(responseMap);
 			}
 			else {
@@ -149,5 +150,30 @@ public class ProfileService {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);			
 		}
 	}
+		
+	public ResponseEntity<?> searchFollower(String searchName, String accessToken)
+	{
+		try {
+			int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));	
+			searchName+="%";
+			List<FollowResponseDto> followerList = followRepository.findSearchFollowerMemberList(memberNum, searchName);		
+			return ResponseEntity.status(HttpStatus.OK).body(followerList);
+		}catch(Exception e)
+		{
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		}
+	}
 	
+	public ResponseEntity<?> searchFollowing(String searchName, String accessToken)
+	{
+		try {
+			int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));	
+			searchName+="%";
+			List<FollowResponseDto> followingList = followRepository.findSearchFollowingMemberList(memberNum, searchName);			
+			return ResponseEntity.status(HttpStatus.OK).body(followingList);
+		}catch(Exception e)
+		{
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		}
+	}
 }

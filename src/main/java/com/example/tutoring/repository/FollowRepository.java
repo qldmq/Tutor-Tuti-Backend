@@ -35,4 +35,16 @@ public interface FollowRepository extends JpaRepository<Follow, Integer> {
     @Transactional
     @Query("DELETE FROM Follow f WHERE f.followerMemberNum = :followerMemberNum AND f.followingMemberNum = :followingMemberNum")
     void unFollowMember(@Param("followerMemberNum") int followerNum, @Param("followingMemberNum") int followingNum);
+
+    //내가 팔로우한 멤버 목록 조회(검색)
+    @Query("SELECT new com.example.tutoring.dto.FollowResponseDto(m.nickname, m.profileImg, m.introduction) " +
+    	       "FROM Follow f JOIN Member m ON f.followingMemberNum = m.memberNum " +
+    	       "WHERE f.followerMemberNum = :followerMemberNum AND m.nickname LIKE :searchName")
+    	List<FollowResponseDto> findSearchFollowingMemberList(@Param("followerMemberNum") int followerMemberNum, @Param("searchName")String searchName);
+
+    //나를 팔로우하는 멤버 목록 조회(검색)
+    @Query("SELECT new com.example.tutoring.dto.FollowResponseDto(m.nickname, m.profileImg, m.introduction) " +
+    	       "FROM Follow f JOIN Member m ON f.followerMemberNum = m.memberNum " +
+    	       "WHERE f.followingMemberNum = :followingMemberNum AND m.nickname LIKE :searchName")
+    	List<FollowResponseDto> findSearchFollowerMemberList(@Param("followingMemberNum") int followingMemberNum, @Param("searchName")String searchName);
 }
