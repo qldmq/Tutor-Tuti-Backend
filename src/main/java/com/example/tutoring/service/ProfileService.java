@@ -102,10 +102,9 @@ public class ProfileService {
 		
 	}
 	
-	public ResponseEntity<?> myFollower(String accessToken)
+	public ResponseEntity<?> getFollowerList(int memberNum)
 	{				
-		try {
-			int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));			
+		try {			
 			List<FollowResponseDto> followerList = followRepository.findFollowerMemberList(memberNum);			
 			return ResponseEntity.status(HttpStatus.OK).body(followerList);
 		}catch(Exception e)
@@ -115,10 +114,9 @@ public class ProfileService {
 		
 	}
 	
-	public ResponseEntity<?> myFollowing(String accessToken)
+	public ResponseEntity<?> getFollowingList(int memberNum)
 	{	
 		try {
-			int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
 			List<FollowResponseDto> followingList = followRepository.findFollowingMemberList(memberNum);
 			return ResponseEntity.status(HttpStatus.OK).body(followingList);
 		}catch(Exception e)
@@ -151,10 +149,9 @@ public class ProfileService {
 		}
 	}
 		
-	public ResponseEntity<?> searchFollower(String searchName, String accessToken)
+	public ResponseEntity<?> searchFollower(String searchName, int memberNum)
 	{
-		try {
-			int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));	
+		try {			
 			searchName+="%";
 			List<FollowResponseDto> followerList = followRepository.findSearchFollowerMemberList(memberNum, searchName);		
 			return ResponseEntity.status(HttpStatus.OK).body(followerList);
@@ -164,10 +161,9 @@ public class ProfileService {
 		}
 	}
 	
-	public ResponseEntity<?> searchFollowing(String searchName, String accessToken)
+	public ResponseEntity<?> searchFollowing(String searchName, int memberNum)
 	{
-		try {
-			int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));	
+		try {			
 			searchName+="%";
 			List<FollowResponseDto> followingList = followRepository.findSearchFollowingMemberList(memberNum, searchName);			
 			return ResponseEntity.status(HttpStatus.OK).body(followingList);
