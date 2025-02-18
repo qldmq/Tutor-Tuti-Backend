@@ -80,4 +80,29 @@ public class ProfileController {
 		
 		return profileService.unFollow(followerNickName, accessToken);
 	}
+	
+	//나를 팔로우 하는 사람의 목록
+	@GetMapping("/searchFollower")
+	public ResponseEntity<?> searchFollower(@RequestParam(value = "searchName", required = false)String searchName , HttpServletRequest request)
+	{
+		log.info("----/profile/searchFollower API 진입----");
+		if(searchName == null)
+			searchName ="";
+		String accessToken = request.getHeader("Authorization").substring(7);
+		
+		return profileService.searchFollower(searchName, accessToken);
+	}
+		
+	//내가 팔로우 하는 사람의 목록
+	@GetMapping("/searchFollowing")
+	public ResponseEntity<?> searchFollowing(@RequestParam(value = "searchName", required = false)String searchName , HttpServletRequest request)
+	{
+		log.info("----/profile/searchFollowing API 진입----");
+		if(searchName == null)
+			searchName ="";
+		
+		String accessToken = request.getHeader("Authorization").substring(7);
+
+		return profileService.searchFollowing(searchName, accessToken);
+	}
 }
