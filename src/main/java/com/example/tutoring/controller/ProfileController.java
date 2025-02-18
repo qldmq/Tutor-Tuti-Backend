@@ -105,4 +105,15 @@ public class ProfileController {
 
 		return profileService.searchFollowing(searchName, accessToken);
 	}
+
+	// 내가 작성한 공지글
+	@GetMapping("/myNotice")
+	public ResponseEntity<Map<String, Object>> myNotice(HttpServletRequest request) {
+
+		log.info("myNotice api 진입");
+
+		String accessToken = request.getHeader("Authorization").substring(7);
+
+		return profileService.myNotice(accessToken);
+	}
 }
