@@ -10,6 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FollowResponseDto {
+	private Integer memberNum;
 	private String followNickname;
     private String followProfileImg;
     private String introduction;
