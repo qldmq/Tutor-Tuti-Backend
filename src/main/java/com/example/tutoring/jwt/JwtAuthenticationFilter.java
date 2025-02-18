@@ -53,7 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     return;
                                                          
                 } catch (RuntimeException e) {
-                	sendJsonErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "리프레시 토큰이 만료되었습니다. 다시 로그인해주세요.");
+                	sendJsonErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "리프레시 토큰이 만료되었습니다.");
                     return;
                 }
             } else if (jwtTokenProvider.validateToken(token)) {  
