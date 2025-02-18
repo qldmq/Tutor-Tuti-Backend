@@ -47,9 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     response.setHeader("newAccessToken", newAccessToken); 
                     
                     MutableHttpServletRequest mutableRequest = new MutableHttpServletRequest(request);
-                    mutableRequest.putHeader("Authorization", "Bearer " + newAccessToken);
-                    
-                    System.out.println("만료되어 재발급했음");                 
+                    mutableRequest.putHeader("Authorization", "Bearer " + newAccessToken);        
                     
                     filterChain.doFilter(mutableRequest, response);
                     return;
