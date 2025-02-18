@@ -19,13 +19,13 @@ public interface FollowRepository extends JpaRepository<Follow, Integer> {
 	int followCheck(@Param("followerMemberNum") int followerNum, @Param("followingMemberNum") int followingNum);
 	   
     //내가 팔로우한 멤버 목록 조회
-    @Query("SELECT new com.example.tutoring.dto.FollowResponseDto(m.nickname, m.profileImg, m.introduction) " +
+    @Query("SELECT new com.example.tutoring.dto.FollowResponseDto(m.memberNum, m.nickname, m.profileImg, m.introduction) " +
     	       "FROM Follow f JOIN Member m ON f.followingMemberNum = m.memberNum " +
     	       "WHERE f.followerMemberNum = :followerMemberNum")
     	List<FollowResponseDto> findFollowingMemberList(@Param("followerMemberNum") int followerMemberNum);
 
     //나를 팔로우하는 멤버 목록 조회
-    @Query("SELECT new com.example.tutoring.dto.FollowResponseDto(m.nickname, m.profileImg, m.introduction) " +
+    @Query("SELECT new com.example.tutoring.dto.FollowResponseDto(m.memberNum, m.nickname, m.profileImg, m.introduction) " +
     	       "FROM Follow f JOIN Member m ON f.followerMemberNum = m.memberNum " +
     	       "WHERE f.followingMemberNum = :followingMemberNum")
     	List<FollowResponseDto> findFollowerMemberList(@Param("followingMemberNum") int followingMemberNum);
@@ -37,13 +37,13 @@ public interface FollowRepository extends JpaRepository<Follow, Integer> {
     void unFollowMember(@Param("followerMemberNum") int followerNum, @Param("followingMemberNum") int followingNum);
 
     //내가 팔로우한 멤버 목록 조회(검색)
-    @Query("SELECT new com.example.tutoring.dto.FollowResponseDto(m.nickname, m.profileImg, m.introduction) " +
+    @Query("SELECT new com.example.tutoring.dto.FollowResponseDto(m.memberNum, m.nickname, m.profileImg, m.introduction) " +
     	       "FROM Follow f JOIN Member m ON f.followingMemberNum = m.memberNum " +
     	       "WHERE f.followerMemberNum = :followerMemberNum AND m.nickname LIKE :searchName")
     	List<FollowResponseDto> findSearchFollowingMemberList(@Param("followerMemberNum") int followerMemberNum, @Param("searchName")String searchName);
 
     //나를 팔로우하는 멤버 목록 조회(검색)
-    @Query("SELECT new com.example.tutoring.dto.FollowResponseDto(m.nickname, m.profileImg, m.introduction) " +
+    @Query("SELECT new com.example.tutoring.dto.FollowResponseDto(m.memberNum, m.nickname, m.profileImg, m.introduction) " +
     	       "FROM Follow f JOIN Member m ON f.followerMemberNum = m.memberNum " +
     	       "WHERE f.followingMemberNum = :followingMemberNum AND m.nickname LIKE :searchName")
     	List<FollowResponseDto> findSearchFollowerMemberList(@Param("followingMemberNum") int followingMemberNum, @Param("searchName")String searchName);
