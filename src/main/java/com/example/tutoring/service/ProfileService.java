@@ -2,6 +2,7 @@ package com.example.tutoring.service;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,10 +103,23 @@ public class ProfileService {
 		
 	}
 	
-	public ResponseEntity<?> getFollowerList(int memberNum)
+	public ResponseEntity<?> getFollowerList(int memberNum, Integer observer)
 	{				
 		try {			
-			List<FollowResponseDto> followerList = followRepository.findFollowerMemberList(memberNum);			
+			
+			int pageSize = 10;
+	        int offset = observer * pageSize;
+			
+	        List<Object[]> result = followRepository.findFollowerMemberList(memberNum, pageSize, offset);
+	        List<FollowResponseDto> followerList = new ArrayList<>();
+	        for (Object[] obj : result) {
+	            Integer followMemberNum = (Integer) obj[0];
+	            String nickname = (String) obj[1];
+	            String profileImg = (String) obj[2];
+	            String introduction = (String) obj[3];
+	            followerList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction));
+	        }
+	                
 			return ResponseEntity.status(HttpStatus.OK).body(followerList);
 		}catch(Exception e)
 		{
@@ -114,10 +128,24 @@ public class ProfileService {
 		
 	}
 	
-	public ResponseEntity<?> getFollowingList(int memberNum)
+	public ResponseEntity<?> getFollowingList(int memberNum, Integer observer)
 	{	
 		try {
-			List<FollowResponseDto> followingList = followRepository.findFollowingMemberList(memberNum);
+			
+			int pageSize = 10;
+	        int offset = observer * pageSize;
+	        	        
+			List<Object[]> result = followRepository.findFollowingMemberList(memberNum, pageSize, offset);
+			
+			List<FollowResponseDto> followingList = new ArrayList<>();
+			for (Object[] obj : result) {
+	            Integer followMemberNum = (Integer) obj[0];
+	            String nickname = (String) obj[1];
+	            String profileImg = (String) obj[2];
+	            String introduction = (String) obj[3];
+	            followingList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction));
+	        }
+			
 			return ResponseEntity.status(HttpStatus.OK).body(followingList);
 		}catch(Exception e)
 		{
@@ -142,11 +170,23 @@ public class ProfileService {
 		}
 	}
 		
-	public ResponseEntity<?> searchFollower(String searchName, int memberNum)
+	public ResponseEntity<?> searchFollower(String searchName, int memberNum, Integer observer)
 	{
 		try {			
 			searchName+="%";
-			List<FollowResponseDto> followerList = followRepository.findSearchFollowerMemberList(memberNum, searchName);		
+			int pageSize = 10;
+	        int offset = observer * pageSize;
+						
+			List<Object[]> result = followRepository.findSearchFollowerMemberList(memberNum, searchName, pageSize, offset);	
+			List<FollowResponseDto> followerList = new ArrayList<>();
+	        for (Object[] obj : result) {
+	            Integer followMemberNum = (Integer) obj[0];
+	            String nickname = (String) obj[1];
+	            String profileImg = (String) obj[2];
+	            String introduction = (String) obj[3];
+	            followerList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction));
+	        }
+						
 			return ResponseEntity.status(HttpStatus.OK).body(followerList);
 		}catch(Exception e)
 		{
@@ -154,11 +194,23 @@ public class ProfileService {
 		}
 	}
 	
-	public ResponseEntity<?> searchFollowing(String searchName, int memberNum)
+	public ResponseEntity<?> searchFollowing(String searchName, int memberNum, Integer observer)
 	{
 		try {			
 			searchName+="%";
-			List<FollowResponseDto> followingList = followRepository.findSearchFollowingMemberList(memberNum, searchName);			
+			int pageSize = 10;
+	        int offset = observer * pageSize;
+						
+			List<Object[]> result = followRepository.findSearchFollowingMemberList(memberNum, searchName, pageSize, offset);		
+			List<FollowResponseDto> followingList = new ArrayList<>();
+			for (Object[] obj : result) {
+	            Integer followMemberNum = (Integer) obj[0];
+	            String nickname = (String) obj[1];
+	            String profileImg = (String) obj[2];
+	            String introduction = (String) obj[3];
+	            followingList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction));
+	        }
+			
 			return ResponseEntity.status(HttpStatus.OK).body(followingList);
 		}catch(Exception e)
 		{
