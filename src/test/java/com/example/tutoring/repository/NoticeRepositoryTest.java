@@ -40,7 +40,11 @@ public class NoticeRepositoryTest {
         assertThat(savedMember).isPresent();
 
         NoticeDto noticeDto = NoticeDto.builder()
+<<<<<<< Updated upstream
                 .memberNum(1)               
+=======
+                .memberNum(1) 
+>>>>>>> Stashed changes
                 .content("공지 내용")
                 .createTime(new Date())
                 .likeCnt(50)
