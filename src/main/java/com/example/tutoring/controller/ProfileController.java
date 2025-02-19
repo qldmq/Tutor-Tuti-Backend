@@ -51,18 +51,24 @@ public class ProfileController {
 	
 	//회원을 팔로우하는 사람의 목록
 	@GetMapping("/followerList")
-	public ResponseEntity<?> getFollowerList(@RequestParam("memberNum")int memberNum)
+	public ResponseEntity<?> getFollowerList(@RequestParam("memberNum")int memberNum, @RequestParam(value = "observer", required = false) Integer observer)
 	{
-		log.info("----/profile/followerList API 진입----");					
-		return profileService.getFollowerList(memberNum);
+		log.info("----/profile/followerList API 진입----");			
+		if(observer == null)
+			observer = 0;
+		
+		return profileService.getFollowerList(memberNum, observer);
 	}
 	
-	//회원을 팔로우하는 사람의 목록
+	//회원이 팔로잉하는 사람의 목록
 	@GetMapping("/followingList")
-	public ResponseEntity<?> myFollowing(@RequestParam("memberNum")int memberNum)
+	public ResponseEntity<?> geyFollowingList(@RequestParam("memberNum")int memberNum,  @RequestParam(value = "observer", required = false) Integer observer)
 	{
-		log.info("----/profile/followingList API 진입----");			
-		return profileService.getFollowingList(memberNum);
+		log.info("----/profile/followingList API 진입----");		
+		if(observer == null)
+			observer = 0;
+		
+		return profileService.getFollowingList(memberNum, observer);
 	}
 	
 	@DeleteMapping("/unFollow")
@@ -77,24 +83,34 @@ public class ProfileController {
 	
 	//나를 팔로우 하는 사람의 목록
 	@GetMapping("/searchFollower")
-	public ResponseEntity<?> searchFollower(@RequestParam(value = "searchName", required = false)String searchName ,@RequestParam("memberNum")int memberNum)
+	public ResponseEntity<?> searchFollower(@RequestParam(value = "searchName", required = false)String searchName ,@RequestParam("memberNum")int memberNum, 
+			@RequestParam(value = "observer", required = false) Integer observer)
 	{
 		log.info("----/profile/searchFollower API 진입----");
 		if(searchName == null)
 			searchName ="";		
 		
-		return profileService.searchFollower(searchName, memberNum);
+		if(observer == null)
+			observer = 0;
+		
+		
+		return profileService.searchFollower(searchName, memberNum, observer);
 	}
 		
 	//내가 팔로우 하는 사람의 목록
 	@GetMapping("/searchFollowing")
-	public ResponseEntity<?> searchFollowing(@RequestParam(value = "searchName", required = false)String searchName ,@RequestParam("memberNum")int memberNum)
+	public ResponseEntity<?> searchFollowing(@RequestParam(value = "searchName", required = false)String searchName ,@RequestParam("memberNum")int memberNum,
+			@RequestParam(value = "observer", required = false) Integer observer)
 	{
 		log.info("----/profile/searchFollowing API 진입----");
 		if(searchName == null)
 			searchName ="";
+		
+		if(observer == null)
+			observer = 0;
+		
 			
-		return profileService.searchFollowing(searchName, memberNum);
+		return profileService.searchFollowing(searchName, memberNum, observer);
 	}
 	
 	
