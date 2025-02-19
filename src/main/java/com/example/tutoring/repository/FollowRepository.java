@@ -30,7 +30,7 @@ public interface FollowRepository extends JpaRepository<Follow, Integer> {
     	       "WHERE f.followingMemberNum = :followingMemberNum")
     	List<FollowResponseDto> findFollowerMemberList(@Param("followingMemberNum") int followingMemberNum);
 
-    //팔로우 취소
+    //팔로우 취소(내가 팔로우 하는)
     @Modifying
     @Transactional
     @Query("DELETE FROM Follow f WHERE f.followerMemberNum = :followerMemberNum AND f.followingMemberNum = :followingMemberNum")
@@ -47,4 +47,11 @@ public interface FollowRepository extends JpaRepository<Follow, Integer> {
     	       "FROM Follow f JOIN Member m ON f.followerMemberNum = m.memberNum " +
     	       "WHERE f.followingMemberNum = :followingMemberNum AND m.nickname LIKE :searchName")
     	List<FollowResponseDto> findSearchFollowerMemberList(@Param("followingMemberNum") int followingMemberNum, @Param("searchName")String searchName);
+
+    //팔로워 삭제(나를 팔로우 하는)
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Follow f WHERE f.followerMemberNum = :followerMemberNum AND f.followingMemberNum = :followingMemberNum")
+    void deleteFollowMember(@Param("followerMemberNum") int followerNum, @Param("followingMemberNum") int followingNum);
+
 }
