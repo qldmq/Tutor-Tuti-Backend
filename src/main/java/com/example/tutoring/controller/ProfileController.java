@@ -49,61 +49,79 @@ public class ProfileController {
 		return profileService.followClick(followerNickName, accessToken);
 	}
 	
-	//나를 팔로우하는 사람의 목록
-	@GetMapping("/myFollower")
-	public ResponseEntity<?> myFollower(HttpServletRequest request)
+	//회원을 팔로우하는 사람의 목록
+	@GetMapping("/followerList")
+	public ResponseEntity<?> getFollowerList(@RequestParam("memberNum")int memberNum, @RequestParam(value = "observer", required = false) Integer observer)
 	{
-		log.info("----/profile/myFollower API 진입----");
-		String accessToken = request.getHeader("Authorization").substring(7);	
-		log.info("엑세스 토큰 : "+accessToken);		
+		log.info("----/profile/followerList API 진입----");			
+		if(observer == null)
+			observer = 0;
 		
-		return profileService.myFollower(accessToken);
+		return profileService.getFollowerList(memberNum, observer);
 	}
 	
-	//내가 팔로우하는 사람의 목록
-	@GetMapping("/myFollowing")
-	public ResponseEntity<?> myFollowing(HttpServletRequest request)
+	//회원이 팔로잉하는 사람의 목록
+	@GetMapping("/followingList")
+	public ResponseEntity<?> geyFollowingList(@RequestParam("memberNum")int memberNum,  @RequestParam(value = "observer", required = false) Integer observer)
 	{
-		log.info("----/profile/myFollowing API 진입----");
-		String accessToken = request.getHeader("Authorization").substring(7);	
-		log.info("엑세스 토큰 : "+accessToken);		
+		log.info("----/profile/followingList API 진입----");		
+		if(observer == null)
+			observer = 0;
 		
-		return profileService.myFollowing(accessToken);
+		return profileService.getFollowingList(memberNum, observer);
 	}
 	
-	@DeleteMapping("/unfollow")
-	public ResponseEntity<Map<String,Object>> unFollow(@RequestBody Map<String,Object> followerData, HttpServletRequest request)
+	@DeleteMapping("/unFollow")
+	public ResponseEntity<Map<String,Object>> unFollow(@RequestBody Map<String,Object> followData, HttpServletRequest request)
 	{
 		log.info("----/profile/unfollow API 진입----");
 		String accessToken = request.getHeader("Authorization").substring(7);
-		String followerNickName = followerData.get("followerNickName").toString();
+		int followMemberNum = (int)followData.get("followMemberNum");;
 		
-		return profileService.unFollow(followerNickName, accessToken);
+		return profileService.unFollow(followMemberNum, accessToken);
 	}
 	
 	//나를 팔로우 하는 사람의 목록
 	@GetMapping("/searchFollower")
-	public ResponseEntity<?> searchFollower(@RequestParam(value = "searchName", required = false)String searchName , HttpServletRequest request)
+	public ResponseEntity<?> searchFollower(@RequestParam(value = "searchName", required = false)String searchName ,@RequestParam("memberNum")int memberNum, 
+			@RequestParam(value = "observer", required = false) Integer observer)
 	{
 		log.info("----/profile/searchFollower API 진입----");
 		if(searchName == null)
-			searchName ="";
-		String accessToken = request.getHeader("Authorization").substring(7);
+			searchName ="";		
 		
-		return profileService.searchFollower(searchName, accessToken);
+		if(observer == null)
+			observer = 0;
+		
+		
+		return profileService.searchFollower(searchName, memberNum, observer);
 	}
 		
 	//내가 팔로우 하는 사람의 목록
 	@GetMapping("/searchFollowing")
-	public ResponseEntity<?> searchFollowing(@RequestParam(value = "searchName", required = false)String searchName , HttpServletRequest request)
+	public ResponseEntity<?> searchFollowing(@RequestParam(value = "searchName", required = false)String searchName ,@RequestParam("memberNum")int memberNum,
+			@RequestParam(value = "observer", required = false) Integer observer)
 	{
 		log.info("----/profile/searchFollowing API 진입----");
 		if(searchName == null)
 			searchName ="";
 		
+		if(observer == null)
+			observer = 0;
+		
+			
+		return profileService.searchFollowing(searchName, memberNum, observer);
+	}
+	
+	
+	@DeleteMapping("/deleteFollow")
+	public ResponseEntity<Map<String,Object>> delteFollow(@RequestBody Map<String,Object> followData, HttpServletRequest request)
+	{
+		log.info("----/profile/deleteFollow API 진입----");
 		String accessToken = request.getHeader("Authorization").substring(7);
-
-		return profileService.searchFollowing(searchName, accessToken);
+		int followMemberNum = (int)followData.get("followMemberNum");
+		
+		return profileService.deleteFollow(followMemberNum, accessToken);
 	}
 
 	// 내가 작성한 공지글

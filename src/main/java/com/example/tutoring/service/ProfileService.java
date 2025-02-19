@@ -5,9 +5,11 @@ import com.example.tutoring.entity.Notice;
 import com.example.tutoring.repository.NoticeRepository;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,29 +41,33 @@ public class ProfileService {
 	private MemberRepository memberRepository;
 
 	@Autowired
-	private NoticeRepository noticeRepository;
+	NoticeRepository noticeRepository;
 
-	public ResponseEntity<Map<String, Object>> profileImgUpdate(MultipartFile file, String accessToken) {
-		Map<String, Object> responseMap = new HashMap<String, Object>();
+	public ResponseEntity<Map<String,Object>> profileImgUpdate(MultipartFile file , String accessToken)
+	{
+		Map<String,Object> responseMap = new HashMap<String, Object>();
 
 		try {
 			int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
 			Optional<Member> member = memberRepository.findById(memberNum);
 			MemberDto dto = MemberDto.toDto(member.get());
 
-			Map<String, Object> result = uploadService.uploadProfileImg(file);
+			Map<String,Object> result = uploadService.uploadProfileImg(file);
 
-			if ((int) result.get("status") == 200) {
+			if((int)result.get("status") == 200)
+			{
 				dto.setProfileImg(result.get("url").toString());
 				memberRepository.save(Member.toEntity(dto));
 				responseMap.put("profileImg", dto.getProfileImg());
 				return ResponseEntity.status(HttpStatus.OK).body(responseMap);
-			} else {
+			}
+			else {
 				log.info("이미지 업로드 실패");
 				responseMap.put("message", "이미지 업로드 실패");
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
 			}
-		} catch (Exception e) {
+		} catch(Exception e)
+		{
 			log.info(e.getMessage());
 			responseMap.put("message", e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
@@ -69,17 +75,19 @@ public class ProfileService {
 
 	}
 
-	public ResponseEntity<Map<String, Object>> followClick(String followerNickName, String accessToken) {
-		Map<String, Object> responseMap = new HashMap<String, Object>();
+	public ResponseEntity<Map<String,Object>> followClick(String followerNickName, String accessToken)
+	{
+		Map<String,Object> responseMap = new HashMap<String, Object>();
 		try {
 			int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
 			Optional<Member> me = memberRepository.findById(memberNum);
 			Optional<Member> follower = memberRepository.findByNickname(followerNickName);
 
-			if (followRepository.followCheck(me.get().getMemberNum(), follower.get().getMemberNum()) > 0) {
+			if(followRepository.followCheck(me.get().getMemberNum(), follower.get().getMemberNum()) > 0)
+			{
 				responseMap.put("message", "이미 팔로우한 회원입니다.");
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
-			} else {
+			}else {
 				FollowDto followDto = FollowDto.builder()
 						.followerMemberId(me.get().getMemberId())
 						.followerMemberNum(memberNum)
@@ -87,12 +95,13 @@ public class ProfileService {
 						.followingMemberNum(follower.get().getMemberNum())
 						.build();
 				followRepository.save(Follow.toEntity(followDto));
-				log.info(me.get().getNickname() + " 가 " + followerNickName + "를 팔로우");
+				log.info(me.get().getNickname()+" 가 "+followerNickName+"를 팔로우");
 
 				return ResponseEntity.status(HttpStatus.OK).body(responseMap);
 			}
 
-		} catch (Exception e) {
+		}catch(Exception e)
+		{
 			log.info(e.getMessage());
 			responseMap.put("message", e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
@@ -100,68 +109,136 @@ public class ProfileService {
 
 	}
 
-	public ResponseEntity<?> myFollower(String accessToken) {
+	public ResponseEntity<?> getFollowerList(int memberNum, Integer observer)
+	{
 		try {
-			int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
-			List<FollowResponseDto> followerList = followRepository.findFollowerMemberList(memberNum);
+
+			int pageSize = 10;
+			int offset = observer * pageSize;
+
+			List<Object[]> result = followRepository.findFollowerMemberList(memberNum, pageSize, offset);
+			List<FollowResponseDto> followerList = new ArrayList<>();
+			for (Object[] obj : result) {
+				Integer followMemberNum = (Integer) obj[0];
+				String nickname = (String) obj[1];
+				String profileImg = (String) obj[2];
+				String introduction = (String) obj[3];
+				followerList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction));
+			}
+
 			return ResponseEntity.status(HttpStatus.OK).body(followerList);
-		} catch (Exception e) {
+		}catch(Exception e)
+		{
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 
 	}
 
-	public ResponseEntity<?> myFollowing(String accessToken) {
+	public ResponseEntity<?> getFollowingList(int memberNum, Integer observer)
+	{
 		try {
-			int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
-			List<FollowResponseDto> followingList = followRepository.findFollowingMemberList(memberNum);
+
+			int pageSize = 10;
+			int offset = observer * pageSize;
+
+			List<Object[]> result = followRepository.findFollowingMemberList(memberNum, pageSize, offset);
+
+			List<FollowResponseDto> followingList = new ArrayList<>();
+			for (Object[] obj : result) {
+				Integer followMemberNum = (Integer) obj[0];
+				String nickname = (String) obj[1];
+				String profileImg = (String) obj[2];
+				String introduction = (String) obj[3];
+				followingList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction));
+			}
+
 			return ResponseEntity.status(HttpStatus.OK).body(followingList);
-		} catch (Exception e) {
+		}catch(Exception e)
+		{
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 
 	}
 
-	public ResponseEntity<Map<String, Object>> unFollow(String followerNickName, String accessToken) {
-		Map<String, Object> responseMap = new HashMap<String, Object>();
+	public ResponseEntity<Map<String,Object>> unFollow(int followMemberNum, String accessToken)
+	{
+		Map<String,Object> responseMap = new HashMap<String, Object>();
 		try {
-			int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
-			Optional<Member> me = memberRepository.findById(memberNum);
-			Optional<Member> follower = memberRepository.findByNickname(followerNickName);
-
-			int myMemberNum = me.get().getMemberNum();
-			int followingMemberNum = follower.get().getMemberNum();
-
-			followRepository.unFollowMember(myMemberNum, followingMemberNum);
-			log.info(me.get().getNickname() + "가 " + follower.get().getNickname() + "를 언팔로우");
+			int myMemberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
+			followRepository.unFollowMember(myMemberNum, followMemberNum);
 			responseMap.put("message", "언팔로우 성공");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
-		} catch (Exception e) {
+		}catch(Exception e)
+		{
 			log.info(e.getMessage());
 			responseMap.put("message", e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
 		}
 	}
 
-	public ResponseEntity<?> searchFollower(String searchName, String accessToken) {
+	public ResponseEntity<?> searchFollower(String searchName, int memberNum, Integer observer)
+	{
 		try {
-			int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
-			searchName += "%";
-			List<FollowResponseDto> followerList = followRepository.findSearchFollowerMemberList(memberNum, searchName);
+			searchName+="%";
+			int pageSize = 10;
+			int offset = observer * pageSize;
+
+			List<Object[]> result = followRepository.findSearchFollowerMemberList(memberNum, searchName, pageSize, offset);
+			List<FollowResponseDto> followerList = new ArrayList<>();
+			for (Object[] obj : result) {
+				Integer followMemberNum = (Integer) obj[0];
+				String nickname = (String) obj[1];
+				String profileImg = (String) obj[2];
+				String introduction = (String) obj[3];
+				followerList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction));
+			}
+
 			return ResponseEntity.status(HttpStatus.OK).body(followerList);
-		} catch (Exception e) {
+		}catch(Exception e)
+		{
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 	}
 
-	public ResponseEntity<?> searchFollowing(String searchName, String accessToken) {
+	public ResponseEntity<?> searchFollowing(String searchName, int memberNum, Integer observer)
+	{
 		try {
-			int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
-			searchName += "%";
-			List<FollowResponseDto> followingList = followRepository.findSearchFollowingMemberList(memberNum, searchName);
+			searchName+="%";
+			int pageSize = 10;
+			int offset = observer * pageSize;
+
+			List<Object[]> result = followRepository.findSearchFollowingMemberList(memberNum, searchName, pageSize, offset);
+			List<FollowResponseDto> followingList = new ArrayList<>();
+			for (Object[] obj : result) {
+				Integer followMemberNum = (Integer) obj[0];
+				String nickname = (String) obj[1];
+				String profileImg = (String) obj[2];
+				String introduction = (String) obj[3];
+				followingList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction));
+			}
+
 			return ResponseEntity.status(HttpStatus.OK).body(followingList);
-		} catch (Exception e) {
+		}catch(Exception e)
+		{
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		}
+	}
+
+
+	public ResponseEntity<Map<String,Object>> deleteFollow(int followMemberNum, String accessToken)
+	{
+		Map<String,Object> responseMap = new HashMap<String, Object>();
+		try {
+			int myMemberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
+			followRepository.deleteFollowMember(followMemberNum,myMemberNum);
+
+			responseMap.put("message", "팔로워 삭제 성공");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
+		}catch(Exception e)
+		{
+			log.info(e.getMessage());
+			responseMap.put("message", e.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
 		}
 	}
 
