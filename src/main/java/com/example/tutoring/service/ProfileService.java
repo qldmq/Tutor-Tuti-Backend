@@ -126,19 +126,12 @@ public class ProfileService {
 		
 	}
 	
-	public ResponseEntity<Map<String,Object>> unFollow(String followerNickName, String accessToken)
+	public ResponseEntity<Map<String,Object>> unFollow(int followMemberNum, String accessToken)
 	{
 		Map<String,Object> responseMap = new HashMap<String, Object>();
 		try {
-			int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
-			Optional<Member> me = memberRepository.findById(memberNum);
-			Optional<Member> follower = memberRepository.findByNickname(followerNickName);
-			
-			int myMemberNum = me.get().getMemberNum();
-			int followingMemberNum = follower.get().getMemberNum();
-			
-			followRepository.unFollowMember(myMemberNum, followingMemberNum);			
-			log.info(me.get().getNickname()+"가 "+follower.get().getNickname()+"를 언팔로우");
+			int myMemberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));		
+			followRepository.unFollowMember(myMemberNum, followMemberNum);			
 			responseMap.put("message", "언팔로우 성공");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);			
 		}catch(Exception e)
@@ -170,6 +163,24 @@ public class ProfileService {
 		}catch(Exception e)
 		{
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		}
+	}
+	
+	
+	public ResponseEntity<Map<String,Object>> deleteFollow(int followMemberNum, String accessToken)
+	{
+		Map<String,Object> responseMap = new HashMap<String, Object>();
+		try {
+			int myMemberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));			
+			followRepository.deleteFollowMember(followMemberNum,myMemberNum);	
+			
+			responseMap.put("message", "팔로워 삭제 성공");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);			
+		}catch(Exception e)
+		{
+			log.info(e.getMessage());
+			responseMap.put("message", e.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);			
 		}
 	}
 }

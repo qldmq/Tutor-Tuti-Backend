@@ -65,14 +65,14 @@ public class ProfileController {
 		return profileService.getFollowingList(memberNum);
 	}
 	
-	@DeleteMapping("/unfollow")
-	public ResponseEntity<Map<String,Object>> unFollow(@RequestBody Map<String,Object> followerData, HttpServletRequest request)
+	@DeleteMapping("/unFollow")
+	public ResponseEntity<Map<String,Object>> unFollow(@RequestBody Map<String,Object> followData, HttpServletRequest request)
 	{
 		log.info("----/profile/unfollow API 진입----");
 		String accessToken = request.getHeader("Authorization").substring(7);
-		String followerNickName = followerData.get("followerNickName").toString();
+		int followMemberNum = (int)followData.get("followMemberNum");;
 		
-		return profileService.unFollow(followerNickName, accessToken);
+		return profileService.unFollow(followMemberNum, accessToken);
 	}
 	
 	//나를 팔로우 하는 사람의 목록
@@ -95,5 +95,16 @@ public class ProfileController {
 			searchName ="";
 			
 		return profileService.searchFollowing(searchName, memberNum);
+	}
+	
+	
+	@DeleteMapping("/deleteFollow")
+	public ResponseEntity<Map<String,Object>> delteFollow(@RequestBody Map<String,Object> followData, HttpServletRequest request)
+	{
+		log.info("----/profile/deleteFollow API 진입----");
+		String accessToken = request.getHeader("Authorization").substring(7);
+		int followMemberNum = (int)followData.get("followMemberNum");
+		
+		return profileService.deleteFollow(followMemberNum, accessToken);
 	}
 }
