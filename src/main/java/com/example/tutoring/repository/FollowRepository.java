@@ -19,7 +19,7 @@ public interface FollowRepository extends JpaRepository<Follow, Integer> {
 	   
     //내가 팔로우한 멤버 목록 조회
     @Query(value="SELECT m.memberNum, m.nickname, m.profileImg, m.introduction " +
-    	       "FROM Follow f JOIN Member m ON f.followingMemberNum = m.memberNum " +
+    	       "FROM follow f JOIN member m ON f.followingMemberNum = m.memberNum " +
     	       "WHERE f.followerMemberNum = :followerMemberNum " +
                "ORDER BY m.nickname ASC " +
                "LIMIT :pageSize OFFSET :offset", nativeQuery = true)
@@ -41,7 +41,7 @@ public interface FollowRepository extends JpaRepository<Follow, Integer> {
 
     //내가 팔로우한 멤버 목록 조회(검색)
     @Query(value="SELECT m.memberNum, m.nickname, m.profileImg, m.introduction " +
-    	       "FROM Follow f JOIN Member m ON f.followingMemberNum = m.memberNum " +
+    	       "FROM follow f JOIN member m ON f.followingMemberNum = m.memberNum " +
     	       "WHERE f.followerMemberNum = :followerMemberNum AND m.nickname LIKE :searchName "+
     	       "ORDER BY m.nickname ASC " +
     	       "LIMIT :pageSize OFFSET :offset", nativeQuery = true)    	       
@@ -49,7 +49,7 @@ public interface FollowRepository extends JpaRepository<Follow, Integer> {
 
     //나를 팔로우하는 멤버 목록 조회(검색)
     @Query(value = "SELECT m.memberNum, m.nickname, m.profileImg, m.introduction " +
-    	       "FROM Follow f JOIN Member m ON f.followerMemberNum = m.memberNum " +
+    	       "FROM follow f JOIN member m ON f.followerMemberNum = m.memberNum " +
     	       "WHERE f.followingMemberNum = :followingMemberNum AND m.nickname LIKE :searchName "+
     	       "ORDER BY m.nickname ASC " +
     	       "LIMIT :pageSize OFFSET :offset", nativeQuery = true)  
