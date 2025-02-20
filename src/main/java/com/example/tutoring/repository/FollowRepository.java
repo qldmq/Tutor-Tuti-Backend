@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import com.example.tutoring.dto.FollowResponseDto;
 import com.example.tutoring.entity.Follow;
 
 @Repository
@@ -19,16 +18,20 @@ public interface FollowRepository extends JpaRepository<Follow, Integer> {
 	int followCheck(@Param("followerMemberNum") int followerNum, @Param("followingMemberNum") int followingNum);
 	   
     //내가 팔로우한 멤버 목록 조회
-    @Query("SELECT new com.example.tutoring.dto.FollowResponseDto(m.memberNum, m.nickname, m.profileImg, m.introduction) " +
-    	       "FROM Follow f JOIN Member m ON f.followingMemberNum = m.memberNum " +
-    	       "WHERE f.followerMemberNum = :followerMemberNum")
-    	List<FollowResponseDto> findFollowingMemberList(@Param("followerMemberNum") int followerMemberNum);
+    @Query(value="SELECT m.memberNum, m.nickname, m.profileImg, m.introduction " +
+    	       "FROM follow f JOIN member m ON f.followingMemberNum = m.memberNum " +
+    	       "WHERE f.followerMemberNum = :followerMemberNum " +
+               "ORDER BY m.nickname ASC " +
+               "LIMIT :pageSize OFFSET :offset", nativeQuery = true)
+	List<Object[]> findFollowingMemberList(@Param("followerMemberNum") int followerMemberNum, @Param("pageSize") int pageSize, @Param("offset") int offset);
 
-    //나를 팔로우하는 멤버 목록 조회
-    @Query("SELECT new com.example.tutoring.dto.FollowResponseDto(m.memberNum, m.nickname, m.profileImg, m.introduction) " +
-    	       "FROM Follow f JOIN Member m ON f.followerMemberNum = m.memberNum " +
-    	       "WHERE f.followingMemberNum = :followingMemberNum")
-    	List<FollowResponseDto> findFollowerMemberList(@Param("followingMemberNum") int followingMemberNum);
+    @Query(value = "SELECT m.memberNum, m.nickname, m.profileImg, m.introduction " +
+            "FROM follow f JOIN member m ON f.followerMemberNum = m.memberNum " +
+            "WHERE f.followingMemberNum = :followingMemberNum " +
+            "ORDER BY m.nickname ASC " +
+            "LIMIT :pageSize OFFSET :offset", nativeQuery = true)
+    List<Object[]> findFollowerMemberList(@Param("followingMemberNum") int followingMemberNum, @Param("pageSize") int pageSize, @Param("offset") int offset);
+
 
     //팔로우 취소(내가 팔로우 하는)
     @Modifying
@@ -37,16 +40,20 @@ public interface FollowRepository extends JpaRepository<Follow, Integer> {
     void unFollowMember(@Param("followerMemberNum") int followerNum, @Param("followingMemberNum") int followingNum);
 
     //내가 팔로우한 멤버 목록 조회(검색)
-    @Query("SELECT new com.example.tutoring.dto.FollowResponseDto(m.memberNum, m.nickname, m.profileImg, m.introduction) " +
-    	       "FROM Follow f JOIN Member m ON f.followingMemberNum = m.memberNum " +
-    	       "WHERE f.followerMemberNum = :followerMemberNum AND m.nickname LIKE :searchName")
-    	List<FollowResponseDto> findSearchFollowingMemberList(@Param("followerMemberNum") int followerMemberNum, @Param("searchName")String searchName);
+    @Query(value="SELECT m.memberNum, m.nickname, m.profileImg, m.introduction " +
+    	       "FROM follow f JOIN member m ON f.followingMemberNum = m.memberNum " +
+    	       "WHERE f.followerMemberNum = :followerMemberNum AND m.nickname LIKE :searchName "+
+    	       "ORDER BY m.nickname ASC " +
+    	       "LIMIT :pageSize OFFSET :offset", nativeQuery = true)    	       
+    	List<Object[]> findSearchFollowingMemberList(@Param("followerMemberNum") int followerMemberNum, @Param("searchName")String searchName, @Param("pageSize") int pageSize, @Param("offset") int offset);
 
     //나를 팔로우하는 멤버 목록 조회(검색)
-    @Query("SELECT new com.example.tutoring.dto.FollowResponseDto(m.memberNum, m.nickname, m.profileImg, m.introduction) " +
-    	       "FROM Follow f JOIN Member m ON f.followerMemberNum = m.memberNum " +
-    	       "WHERE f.followingMemberNum = :followingMemberNum AND m.nickname LIKE :searchName")
-    	List<FollowResponseDto> findSearchFollowerMemberList(@Param("followingMemberNum") int followingMemberNum, @Param("searchName")String searchName);
+    @Query(value = "SELECT m.memberNum, m.nickname, m.profileImg, m.introduction " +
+    	       "FROM follow f JOIN member m ON f.followerMemberNum = m.memberNum " +
+    	       "WHERE f.followingMemberNum = :followingMemberNum AND m.nickname LIKE :searchName "+
+    	       "ORDER BY m.nickname ASC " +
+    	       "LIMIT :pageSize OFFSET :offset", nativeQuery = true)  
+    	List<Object[]> findSearchFollowerMemberList(@Param("followingMemberNum") int followingMemberNum, @Param("searchName")String searchName,  @Param("pageSize") int pageSize, @Param("offset") int offset);
 
     //팔로워 삭제(나를 팔로우 하는)
     @Modifying

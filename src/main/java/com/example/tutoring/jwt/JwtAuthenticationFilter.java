@@ -42,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if ((int)tokenCheck.get("check") == 0) {  
             	
                 String memberNum = jwtTokenProvider.getMemberNum(token);
-                try {
+                try {               	
                     String newAccessToken = jwtTokenProvider.reissueAccessToken(Integer.parseInt(memberNum));
                     response.setHeader("newAccessToken", newAccessToken); 
                     
@@ -53,7 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     return;
                                                          
                 } catch (RuntimeException e) {
-                	sendJsonErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "리프레시 토큰이 만료되었습니다.");
+                	sendJsonErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
                     return;
                 }
             } else if (jwtTokenProvider.validateToken(token)) {  
