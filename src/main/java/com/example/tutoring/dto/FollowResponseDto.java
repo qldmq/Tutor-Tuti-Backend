@@ -14,4 +14,5 @@ public class FollowResponseDto {
 	private String followNickname;
     private String followProfileImg;
     private String introduction;
+    private boolean status;
 }
