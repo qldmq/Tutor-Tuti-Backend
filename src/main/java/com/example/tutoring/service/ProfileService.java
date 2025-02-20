@@ -116,7 +116,7 @@ public class ProfileService {
 			int pageSize = 10;
 			int offset = observer * pageSize;
 			
-			int myMemeberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
+			int myMemberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
 			
 			List<Object[]> result = followRepository.findFollowerMemberList(memberNum, pageSize, offset);
 			List<FollowResponseDto> followerList = new ArrayList<>();
@@ -125,9 +125,18 @@ public class ProfileService {
 				String nickname = (String) obj[1];
 				String profileImg = (String) obj[2];
 				String introduction = (String) obj[3];
+								
 				boolean status = true;
-				if(followRepository.followCheck(followMemberNum, myMemeberNum) < 1)
-					status = false;
+				
+				if(followMemberNum == myMemberNum)
+				{
+					if(followRepository.followCheck(memberNum, myMemberNum) != 1)
+						status= false;
+				}else {
+					if(followRepository.eachFollowCheck(followMemberNum, myMemberNum) != 2)
+						status = false;
+				}												
+				
 								
 				followerList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction, status));
 			}
@@ -155,7 +164,7 @@ public class ProfileService {
 			int pageSize = 10;
 			int offset = observer * pageSize;
 			
-			int myMemeberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
+			int myMemberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
 
 			List<Object[]> result = followRepository.findFollowingMemberList(memberNum, pageSize, offset);
 
@@ -167,8 +176,15 @@ public class ProfileService {
 				String introduction = (String) obj[3];
 				
 				boolean status = true;
-				if(followRepository.followCheck(followMemberNum, myMemeberNum) < 1)
-					status = false;
+				
+				if(followMemberNum == myMemberNum)
+				{
+					if(followRepository.followCheck(myMemberNum, memberNum) != 1)
+						status= false;
+				}else {
+					if(followRepository.eachFollowCheck(followMemberNum, myMemberNum) != 2)
+						status = false;
+				}				
 
 				followingList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction,status));
 			}
@@ -214,7 +230,7 @@ public class ProfileService {
 			int pageSize = 10;
 			int offset = observer * pageSize;
 
-			int myMemeberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
+			int myMemberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
 			
 			List<Object[]> result = followRepository.findSearchFollowerMemberList(memberNum, searchName, pageSize, offset);
 			List<FollowResponseDto> followerList = new ArrayList<>();
@@ -225,8 +241,15 @@ public class ProfileService {
 				String introduction = (String) obj[3];
 				
 				boolean status = true;
-				if(followRepository.followCheck(followMemberNum, myMemeberNum) < 1)
-					status = false;
+				
+				if(followMemberNum == myMemberNum)
+				{
+					if(followRepository.followCheck(memberNum, myMemberNum) != 1)
+						status= false;
+				}else {
+					if(followRepository.eachFollowCheck(followMemberNum, myMemberNum) != 2)
+						status = false;
+				}	
 				
 				followerList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction,status));
 			}
@@ -256,7 +279,7 @@ public class ProfileService {
 			int pageSize = 10;
 			int offset = observer * pageSize;
 			
-			int myMemeberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
+			int myMemberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
 
 			List<Object[]> result = followRepository.findSearchFollowingMemberList(memberNum, searchName, pageSize, offset);
 			List<FollowResponseDto> followingList = new ArrayList<>();
@@ -267,8 +290,15 @@ public class ProfileService {
 				String introduction = (String) obj[3];
 				
 				boolean status = true;
-				if(followRepository.followCheck(followMemberNum, myMemeberNum) < 1)
-					status = false;
+				
+				if(followMemberNum == myMemberNum)
+				{
+					if(followRepository.followCheck(myMemberNum, memberNum) != 1)
+						status= false;
+				}else {
+					if(followRepository.eachFollowCheck(followMemberNum, myMemberNum) != 2)
+						status = false;
+				}	
 				
 				followingList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction,status));
 			}
