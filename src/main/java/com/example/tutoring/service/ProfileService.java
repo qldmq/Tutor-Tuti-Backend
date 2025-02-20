@@ -109,13 +109,15 @@ public class ProfileService {
 
 	}
 
-	public ResponseEntity<?> getFollowerList(int memberNum, Integer observer)
+	public ResponseEntity<?> getFollowerList(int memberNum, Integer observer ,String accessToken)
 	{
 		try {
-
+			Map<String,Object> response = new HashMap<String, Object>();
 			int pageSize = 10;
 			int offset = observer * pageSize;
-
+			
+			int myMemeberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
+			
 			List<Object[]> result = followRepository.findFollowerMemberList(memberNum, pageSize, offset);
 			List<FollowResponseDto> followerList = new ArrayList<>();
 			for (Object[] obj : result) {
@@ -123,10 +125,21 @@ public class ProfileService {
 				String nickname = (String) obj[1];
 				String profileImg = (String) obj[2];
 				String introduction = (String) obj[3];
-				followerList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction));
+				boolean status = true;
+				if(followRepository.followCheck(followMemberNum, myMemeberNum) < 1)
+					status = false;
+								
+				followerList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction, status));
 			}
 
-			return ResponseEntity.status(HttpStatus.OK).body(followerList);
+			response.put("followList",followerList);
+			
+			if(followerList.size() < pageSize)
+				response.put("flag", true);
+			else
+				response.put("flag", false);
+			
+			return ResponseEntity.status(HttpStatus.OK).body(response);
 		}catch(Exception e)
 		{
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -134,12 +147,15 @@ public class ProfileService {
 
 	}
 
-	public ResponseEntity<?> getFollowingList(int memberNum, Integer observer)
+	public ResponseEntity<?> getFollowingList(int memberNum, Integer observer ,String accessToken)
 	{
 		try {
 
+			Map<String,Object> response = new HashMap<String, Object>();
 			int pageSize = 10;
 			int offset = observer * pageSize;
+			
+			int myMemeberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
 
 			List<Object[]> result = followRepository.findFollowingMemberList(memberNum, pageSize, offset);
 
@@ -149,10 +165,22 @@ public class ProfileService {
 				String nickname = (String) obj[1];
 				String profileImg = (String) obj[2];
 				String introduction = (String) obj[3];
-				followingList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction));
-			}
+				
+				boolean status = true;
+				if(followRepository.followCheck(followMemberNum, myMemeberNum) < 1)
+					status = false;
 
-			return ResponseEntity.status(HttpStatus.OK).body(followingList);
+				followingList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction,status));
+			}
+			
+			response.put("followList",followingList);
+			
+			if(followingList.size() < pageSize)
+				response.put("flag", true);
+			else
+				response.put("flag", false);
+
+			return ResponseEntity.status(HttpStatus.OK).body(response);
 		}catch(Exception e)
 		{
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -176,13 +204,18 @@ public class ProfileService {
 		}
 	}
 
-	public ResponseEntity<?> searchFollower(String searchName, int memberNum, Integer observer)
+	public ResponseEntity<?> searchFollower(String searchName, int memberNum, Integer observer,String accessToken)
 	{
+		
+		Map<String,Object> response = new HashMap<String, Object>();
+		
 		try {
 			searchName+="%";
 			int pageSize = 10;
 			int offset = observer * pageSize;
 
+			int myMemeberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
+			
 			List<Object[]> result = followRepository.findSearchFollowerMemberList(memberNum, searchName, pageSize, offset);
 			List<FollowResponseDto> followerList = new ArrayList<>();
 			for (Object[] obj : result) {
@@ -190,22 +223,40 @@ public class ProfileService {
 				String nickname = (String) obj[1];
 				String profileImg = (String) obj[2];
 				String introduction = (String) obj[3];
-				followerList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction));
+				
+				boolean status = true;
+				if(followRepository.followCheck(followMemberNum, myMemeberNum) < 1)
+					status = false;
+				
+				followerList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction,status));
 			}
+			
+			
+			response.put("followList",followerList);
+			
+			if(followerList.size() < pageSize)
+				response.put("flag", true);
+			else
+				response.put("flag", false);
 
-			return ResponseEntity.status(HttpStatus.OK).body(followerList);
+			return ResponseEntity.status(HttpStatus.OK).body(response);
 		}catch(Exception e)
 		{
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 	}
 
-	public ResponseEntity<?> searchFollowing(String searchName, int memberNum, Integer observer)
+	public ResponseEntity<?> searchFollowing(String searchName, int memberNum, Integer observer,String accessToken)
 	{
+		
+		Map<String,Object> response = new HashMap<String, Object>();
+		
 		try {
 			searchName+="%";
 			int pageSize = 10;
 			int offset = observer * pageSize;
+			
+			int myMemeberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
 
 			List<Object[]> result = followRepository.findSearchFollowingMemberList(memberNum, searchName, pageSize, offset);
 			List<FollowResponseDto> followingList = new ArrayList<>();
@@ -214,10 +265,22 @@ public class ProfileService {
 				String nickname = (String) obj[1];
 				String profileImg = (String) obj[2];
 				String introduction = (String) obj[3];
-				followingList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction));
+				
+				boolean status = true;
+				if(followRepository.followCheck(followMemberNum, myMemeberNum) < 1)
+					status = false;
+				
+				followingList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction,status));
 			}
 
-			return ResponseEntity.status(HttpStatus.OK).body(followingList);
+			response.put("followList",followingList);
+			
+			if(followingList.size() < pageSize)
+				response.put("flag", true);
+			else
+				response.put("flag", false);
+						
+			return ResponseEntity.status(HttpStatus.OK).body(response);
 		}catch(Exception e)
 		{
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

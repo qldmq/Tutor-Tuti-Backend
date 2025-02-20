@@ -51,24 +51,28 @@ public class ProfileController {
 	
 	//회원을 팔로우하는 사람의 목록
 	@GetMapping("/followerList")
-	public ResponseEntity<?> getFollowerList(@RequestParam("memberNum")int memberNum, @RequestParam(value = "observer", required = false) Integer observer)
+	public ResponseEntity<?> getFollowerList(@RequestParam("memberNum")int memberNum, @RequestParam(value = "observer", required = false) Integer observer, HttpServletRequest request)
 	{
 		log.info("----/profile/followerList API 진입----");			
+		String accessToken = request.getHeader("Authorization").substring(7);
+		log.info("엑세스 토큰 : "+accessToken);	
 		if(observer == null)
 			observer = 0;
 		
-		return profileService.getFollowerList(memberNum, observer);
+		return profileService.getFollowerList(memberNum, observer, accessToken);
 	}
 	
 	//회원이 팔로잉하는 사람의 목록
 	@GetMapping("/followingList")
-	public ResponseEntity<?> geyFollowingList(@RequestParam("memberNum")int memberNum,  @RequestParam(value = "observer", required = false) Integer observer)
+	public ResponseEntity<?> geyFollowingList(@RequestParam("memberNum")int memberNum,  @RequestParam(value = "observer", required = false) Integer observer, HttpServletRequest request)
 	{
 		log.info("----/profile/followingList API 진입----");		
+		String accessToken = request.getHeader("Authorization").substring(7);
+		log.info("엑세스 토큰 : "+accessToken);	
 		if(observer == null)
 			observer = 0;
 		
-		return profileService.getFollowingList(memberNum, observer);
+		return profileService.getFollowingList(memberNum, observer, accessToken);
 	}
 	
 	@DeleteMapping("/unFollow")
@@ -84,9 +88,11 @@ public class ProfileController {
 	//나를 팔로우 하는 사람의 목록
 	@GetMapping("/searchFollower")
 	public ResponseEntity<?> searchFollower(@RequestParam(value = "searchName", required = false)String searchName ,@RequestParam("memberNum")int memberNum, 
-			@RequestParam(value = "observer", required = false) Integer observer)
+			@RequestParam(value = "observer", required = false) Integer observer, HttpServletRequest request)
 	{
 		log.info("----/profile/searchFollower API 진입----");
+		String accessToken = request.getHeader("Authorization").substring(7);
+		log.info("엑세스 토큰 : "+accessToken);	
 		if(searchName == null)
 			searchName ="";		
 		
@@ -94,15 +100,17 @@ public class ProfileController {
 			observer = 0;
 		
 		
-		return profileService.searchFollower(searchName, memberNum, observer);
+		return profileService.searchFollower(searchName, memberNum, observer, accessToken);
 	}
 		
 	//내가 팔로우 하는 사람의 목록
 	@GetMapping("/searchFollowing")
 	public ResponseEntity<?> searchFollowing(@RequestParam(value = "searchName", required = false)String searchName ,@RequestParam("memberNum")int memberNum,
-			@RequestParam(value = "observer", required = false) Integer observer)
+			@RequestParam(value = "observer", required = false) Integer observer, HttpServletRequest request)
 	{
 		log.info("----/profile/searchFollowing API 진입----");
+		String accessToken = request.getHeader("Authorization").substring(7);
+		log.info("엑세스 토큰 : "+accessToken);	
 		if(searchName == null)
 			searchName ="";
 		
@@ -110,7 +118,7 @@ public class ProfileController {
 			observer = 0;
 		
 			
-		return profileService.searchFollowing(searchName, memberNum, observer);
+		return profileService.searchFollowing(searchName, memberNum, observer, accessToken);
 	}
 	
 	
