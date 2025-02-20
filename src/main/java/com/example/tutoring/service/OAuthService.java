@@ -17,7 +17,9 @@ import org.springframework.web.client.RestTemplate;
 import com.example.tutoring.dto.MemberDto;
 import com.example.tutoring.entity.Member;
 import com.example.tutoring.jwt.JwtTokenProvider;
+import com.example.tutoring.repository.FollowRepository;
 import com.example.tutoring.repository.MemberRepository;
+import com.example.tutoring.repository.NoticeRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,10 +33,16 @@ public class OAuthService {
 	private RestTemplate restTemplate;
     
 	@Autowired
-	private final MemberRepository memberRepository;
+	private MemberRepository memberRepository;
     
 	@Autowired
-	private final JwtTokenProvider jwtTokenProvider;
+	private FollowRepository followRepository;
+	
+	@Autowired
+	private NoticeRepository noticeRepository;
+	
+	@Autowired
+	private JwtTokenProvider jwtTokenProvider;
 	
 	@Value("${spring.security.oauth2.client.registration.naver.client-id}")
 	private String clientId;
@@ -58,6 +66,10 @@ public class OAuthService {
 	public ResponseEntity<Map<String,Object>> naverLogin(Map<String,Object> loginData)
 	{
 		Map<String,Object> responseMap = new HashMap<String, Object>();
+		
+		int followerCnt = 0;
+		int followCnt = 0;
+		int noticeCnt = 0;
 		
 		try {
 			String code = loginData.get("code").toString();
@@ -106,6 +118,10 @@ public class OAuthService {
 	        String accessToken = jwtTokenProvider.createAccessToken(Integer.toString(member.getMemberNum()));
 	        jwtTokenProvider.createRefreshToken(Integer.toString(member.getMemberNum()));
 	                        
+	        followerCnt = followRepository.followerCount(member.getMemberNum());
+			followCnt = followRepository.followingCount(member.getMemberNum());
+			noticeCnt = noticeRepository.noticeCount(member.getMemberNum());
+	        
 	        responseMap.put("memberNum", member.getMemberNum());
 	        responseMap.put("loginType", member.getLoginType());
 	        responseMap.put("nickname", member.getNickname());
@@ -113,7 +129,10 @@ public class OAuthService {
 	        responseMap.put("introduction", member.getIntroduction());
 	        responseMap.put("access", accessToken);
 	        responseMap.put("hasNotice", false);
-	                                      
+	        responseMap.put("followCount", followCnt);
+		    responseMap.put("followerCnt", followerCnt);
+			responseMap.put("noticeCount", noticeCnt);   
+			
 			return ResponseEntity.status(HttpStatus.OK).body(responseMap);
 			
 		}catch(Exception e)
@@ -140,6 +159,10 @@ public class OAuthService {
 	public ResponseEntity<Map<String, Object>> kakaoLogin(String code) {
 
 		Map<String, Object> responseMap = new HashMap<>();
+		
+		int followerCnt = 0;
+		int followCnt = 0;
+		int noticeCnt = 0;
 
 		try {
 			// 1. 인가 코드로 액세스 토큰 요청
@@ -195,7 +218,11 @@ public class OAuthService {
 			// 4. JWT 토큰 생성
 			String accessToken = jwtTokenProvider.createAccessToken(Integer.toString(member.getMemberNum()));
 			jwtTokenProvider.createRefreshToken(Integer.toString(member.getMemberNum()));
-
+		
+			followerCnt = followRepository.followerCount(member.getMemberNum());
+			followCnt = followRepository.followingCount(member.getMemberNum());
+			noticeCnt = noticeRepository.noticeCount(member.getMemberNum());
+			
 			// 5. 반환 데이터 설정
 			responseMap.put("memberNum", member.getMemberNum());
 			responseMap.put("loginType", member.getLoginType());
@@ -204,7 +231,10 @@ public class OAuthService {
 			responseMap.put("introduction", member.getIntroduction());
 			responseMap.put("access", accessToken);
 			responseMap.put("hasNotice", false);
-
+			responseMap.put("followCount", followCnt);
+			responseMap.put("followerCnt", followerCnt);
+			responseMap.put("noticeCount", noticeCnt);
+					
 			return ResponseEntity.status(HttpStatus.OK).body(responseMap);
 
 		} catch (Exception e) {

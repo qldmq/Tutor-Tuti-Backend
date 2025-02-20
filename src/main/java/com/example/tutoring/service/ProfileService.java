@@ -296,7 +296,7 @@ public class ProfileService {
 			followRepository.deleteFollowMember(followMemberNum,myMemberNum);
 
 			responseMap.put("message", "팔로워 삭제 성공");
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
+			return ResponseEntity.status(HttpStatus.OK).body(responseMap);
 		}catch(Exception e)
 		{
 			log.info(e.getMessage());
@@ -333,4 +333,37 @@ public class ProfileService {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
 	}
+	
+	public ResponseEntity<Map<String, Object>> profileInfo(int memberNum)
+	{
+		Map<String,Object> response = new HashMap<String, Object>();
+		
+		int followerCnt = 0;
+		int followCnt = 0;
+		int noticeCnt = 0;
+		
+		try {
+			Member member = memberRepository.findById(memberNum).get();
+			followerCnt = followRepository.followerCount(memberNum);
+			followCnt = followRepository.followingCount(memberNum);
+			noticeCnt = noticeRepository.noticeCount(memberNum);
+						
+			response.put("memberNum", member.getMemberNum());
+			response.put("nickname", member.getNickname());
+			response.put("profileImg", member.getProfileImg());
+			response.put("introduction",member.getIntroduction());
+			response.put("followCount", followCnt);
+			response.put("followerCnt", followerCnt);
+			response.put("noticeCount", noticeCnt);
+			
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		}catch(Exception e)
+		{
+			response.put("message", e.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		}
+				
+		
+	}
+	
 }

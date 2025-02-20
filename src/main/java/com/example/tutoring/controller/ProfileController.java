@@ -142,4 +142,12 @@ public class ProfileController {
 
 		return profileService.myNotice(accessToken);
 	}
+	
+	//회원 프로필 조회
+	@GetMapping("/profileInfo")
+	public ResponseEntity<Map<String,Object>> profileInfo(@RequestParam("memberNum")int memberNum)
+	{
+		log.info("----/profile/profileInfo API 진입----");
+		return profileService.profileInfo(memberNum);
+	}
 }
