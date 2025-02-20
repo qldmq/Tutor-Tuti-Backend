@@ -69,4 +69,17 @@ public interface FollowRepository extends JpaRepository<Follow, Integer> {
   	//팔로잉 카운트(회원이 팔로우하는)
   	@Query("SELECT COUNT(f) FROM Follow f WHERE f.followerMemberNum = :memberNum")
   	int followingCount(@Param("memberNum") int memberNum);
+  	  	
+  	@Query(value = "SELECT m.memberNum, m.nickname, m.profileImg " +
+            "FROM member m " +
+            "JOIN follow f ON m.memberNum = f.followingMemberNum " +
+            "JOIN notice n ON m.memberNum = n.memberNum " +
+            "WHERE f.followerMemberNum = :memberNum " +
+            "AND DATE_ADD(n.createTime, INTERVAL 1 DAY) > NOW() " +
+            "LIMIT :pageSize OFFSET :offset", 
+    nativeQuery = true)
+  	List<Object[]> findLastNoticeFollowMember(@Param("memberNum") int memberNum, @Param("pageSize") int pageSize, @Param("offset") int offset);
+  	
+  	
+  	
 }
