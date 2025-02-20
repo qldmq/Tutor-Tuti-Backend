@@ -296,7 +296,7 @@ public class ProfileService {
 			followRepository.deleteFollowMember(followMemberNum,myMemberNum);
 
 			responseMap.put("message", "팔로워 삭제 성공");
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
+			return ResponseEntity.status(HttpStatus.OK).body(responseMap);
 		}catch(Exception e)
 		{
 			log.info(e.getMessage());
@@ -333,4 +333,74 @@ public class ProfileService {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
 	}
+	
+	public ResponseEntity<Map<String, Object>> profileInfo(int memberNum)
+	{
+		Map<String,Object> response = new HashMap<String, Object>();
+		
+		int followerCnt = 0;
+		int followCnt = 0;
+		int noticeCnt = 0;
+		
+		try {
+			Member member = memberRepository.findById(memberNum).get();
+			followerCnt = followRepository.followerCount(memberNum);
+			followCnt = followRepository.followingCount(memberNum);
+			noticeCnt = noticeRepository.noticeCount(memberNum);
+						
+			response.put("memberNum", member.getMemberNum());
+			response.put("nickname", member.getNickname());
+			response.put("profileImg", member.getProfileImg());
+			response.put("introduction",member.getIntroduction());
+			response.put("followCount", followCnt);
+			response.put("followerCnt", followerCnt);
+			response.put("noticeCount", noticeCnt);
+			
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		}catch(Exception e)
+		{
+			response.put("message", e.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		}
+						
+	}
+	
+	public ResponseEntity<Map<String, Object>> lastNotice(int observer, String accessToken)
+	{
+		Map<String,Object> response = new HashMap<String, Object>();
+		
+		try {
+			int pageSize = 6;
+			int offset = observer * pageSize;		
+			int myMemeberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
+			
+			List<Object[]> result = followRepository.findLastNoticeFollowMember(myMemeberNum, pageSize, offset);
+			List<Map<String,Object>> followList = new ArrayList<Map<String,Object>>();
+			for(Object[] member : result)
+			{
+				Map<String,Object> followMember = new HashMap<String, Object>();
+				
+				followMember.put("memberNum", (int)member[0]);
+				followMember.put("followNickName", (String)member[1]);
+				followMember.put("followProfileImg",(String)member[2]);
+				
+				followList.add(followMember);
+			}
+			
+			response.put("followList",followList);
+			
+			if(followList.size() < pageSize)
+				response.put("flag", true);
+			else
+				response.put("flag", false);
+			
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		}catch(Exception e)
+		{
+			response.put("message", e.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);		
+		}
+				
+	}
+	
 }

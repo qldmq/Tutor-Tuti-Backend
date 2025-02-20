@@ -4,7 +4,9 @@ import com.example.tutoring.dto.MemberDto;
 import com.example.tutoring.entity.Member;
 import com.example.tutoring.jwt.CustomUserDetails;
 import com.example.tutoring.jwt.JwtTokenProvider;
+import com.example.tutoring.repository.FollowRepository;
 import com.example.tutoring.repository.MemberRepository;
+import com.example.tutoring.repository.NoticeRepository;
 import com.example.tutoring.repository.RefreshTokenRespository;
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +42,12 @@ public class MemberService {
 
 	@Autowired
     private MemberRepository memberRepository;
+	
+	@Autowired
+	private NoticeRepository noticeRepository;
+	
+	@Autowired
+	private FollowRepository followRepository;
 
 	@Autowired
 	private RefreshTokenRespository refreshTokenRespository;
@@ -110,7 +118,10 @@ public class MemberService {
 
     	String memberId = loginData.get("memberId").toString();
     	String password = loginData.get("password").toString();
-
+    	
+		int followerCnt = 0;
+		int followCnt = 0;
+		int noticeCnt = 0;
     	try {
 
     		UsernamePasswordAuthenticationToken authenticationToken =
@@ -126,6 +137,10 @@ public class MemberService {
 
         	String accessToken = jwtTokenProvider.createAccessToken(memberNumString);
         	jwtTokenProvider.createRefreshToken(memberNumString);
+        	
+        	followerCnt = followRepository.followerCount(member.getMemberNum());
+			followCnt = followRepository.followingCount(member.getMemberNum());
+			noticeCnt = noticeRepository.noticeCount(member.getMemberNum());     	
 
              responseMap.put("memberNum", member.getMemberNum());
              responseMap.put("loginType", member.getLoginType());
@@ -134,6 +149,9 @@ public class MemberService {
              responseMap.put("introduction", member.getIntroduction());
              responseMap.put("access", accessToken);
              responseMap.put("hasNotice", false);
+             responseMap.put("followCount", followCnt);
+ 			 responseMap.put("followerCount", followerCnt);
+ 			 responseMap.put("noticeCount", noticeCnt);
 
              return ResponseEntity.status(HttpStatus.OK).body(responseMap);
 

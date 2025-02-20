@@ -142,4 +142,24 @@ public class ProfileController {
 
 		return profileService.myNotice(accessToken);
 	}
+	
+	//회원 프로필 조회
+	@GetMapping("/profileInfo")
+	public ResponseEntity<Map<String,Object>> profileInfo(@RequestParam("memberNum")int memberNum)
+	{
+		log.info("----/profile/profileInfo API 진입----");
+		return profileService.profileInfo(memberNum);
+	}
+	
+	@GetMapping("/lastNotice")
+	public ResponseEntity<Map<String,Object>> lastNotice(@RequestParam(value = "observer", required = false) Integer observer, HttpServletRequest request)
+	{
+		log.info("----/profile/lastNotice API 진입----");
+		
+		if(observer == null)
+			observer = 0;
+		
+		String accessToken = request.getHeader("Authorization").substring(7);
+		return profileService.lastNotice(observer, accessToken);
+	}
 }
