@@ -60,5 +60,13 @@ public interface FollowRepository extends JpaRepository<Follow, Integer> {
     @Transactional
     @Query("DELETE FROM Follow f WHERE f.followerMemberNum = :followerMemberNum AND f.followingMemberNum = :followingMemberNum")
     void deleteFollowMember(@Param("followerMemberNum") int followerNum, @Param("followingMemberNum") int followingNum);
+    
+    
+    //팔로워 카운트(회원을 팔로우하는)
+  	@Query("SELECT COUNT(f) FROM Follow f WHERE f.followingMemberNum = :memberNum")
+  	int followerCount(@Param("memberNum") int memberNum);
 
+  	//팔로잉 카운트(회원이 팔로우하는)
+  	@Query("SELECT COUNT(f) FROM Follow f WHERE f.followerMemberNum = :memberNum")
+  	int followingCount(@Param("memberNum") int memberNum);
 }
