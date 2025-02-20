@@ -103,22 +103,21 @@ public class JwtTokenProvider {
 	
 	
 	public boolean isRefreshTokenExpired(Integer memberNum) {
-        Optional<RefreshToken> storedToken = refreshTokenRespository.findById(memberNum);    
+        Optional<RefreshToken> storedToken = refreshTokenRespository.findById(memberNum);                     
         return storedToken.map(token -> token.getExpiryDate().isBefore(Instant.now())).orElse(true);
     }
 	
 	public String reissueAccessToken(Integer memberNum) {
 
-        if (isRefreshTokenExpired(memberNum)) {
-            throw new RuntimeException("Refresh Token이 만료되었습니다.");
-            
-        }
-
-        Optional<RefreshToken> storedToken = refreshTokenRespository.findById(memberNum);
+		Optional<RefreshToken> storedToken = refreshTokenRespository.findById(memberNum);
         if (storedToken.isEmpty()) {
             throw new RuntimeException("Refresh Token이 유효하지 않습니다.");
         }
-       
+		
+        if (isRefreshTokenExpired(memberNum)) {
+            throw new RuntimeException("Refresh Token이 만료되었습니다.");         
+        }
+            
         return createAccessToken(Integer.toString(memberNum));
     }
 			
