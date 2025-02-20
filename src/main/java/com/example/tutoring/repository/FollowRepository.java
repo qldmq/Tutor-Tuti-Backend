@@ -16,7 +16,12 @@ public interface FollowRepository extends JpaRepository<Follow, Integer> {
 	//팔로우 체크
 	@Query("SELECT COUNT(f) FROM Follow f WHERE f.followerMemberNum = :followerMemberNum AND f.followingMemberNum = :followingMemberNum")
 	int followCheck(@Param("followerMemberNum") int followerNum, @Param("followingMemberNum") int followingNum);
-	   
+	 
+	//맞팔로우 체크
+	@Query("SELECT COUNT(f) FROM Follow f WHERE (f.followerMemberNum = :followerMemberNum AND f.followingMemberNum = :followingMemberNum) "+
+	"OR (f.followingMemberNum = :followerMemberNum AND f.followerMemberNum = :followingMemberNum)")
+	int eachFollowCheck(@Param("followerMemberNum") int followerNum, @Param("followingMemberNum") int followingNum);
+	 	
     //내가 팔로우한 멤버 목록 조회
     @Query(value="SELECT m.memberNum, m.nickname, m.profileImg, m.introduction " +
     	       "FROM follow f JOIN member m ON f.followingMemberNum = m.memberNum " +
