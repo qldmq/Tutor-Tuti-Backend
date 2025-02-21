@@ -76,11 +76,10 @@ public class ProfileController {
 	}
 	
 	@DeleteMapping("/unFollow")
-	public ResponseEntity<Map<String,Object>> unFollow(@RequestBody Map<String,Object> followData, HttpServletRequest request)
+	public ResponseEntity<Map<String,Object>> unFollow(@RequestParam("followMemberNum")int followMemberNum, HttpServletRequest request)
 	{
 		log.info("----/profile/unfollow API 진입----");
 		String accessToken = request.getHeader("Authorization").substring(7);
-		int followMemberNum = (int)followData.get("followMemberNum");;
 		
 		return profileService.unFollow(followMemberNum, accessToken);
 	}
@@ -123,11 +122,10 @@ public class ProfileController {
 	
 	
 	@DeleteMapping("/deleteFollow")
-	public ResponseEntity<Map<String,Object>> delteFollow(@RequestBody Map<String,Object> followData, HttpServletRequest request)
+	public ResponseEntity<Map<String,Object>> delteFollow(@RequestParam("followMemberNum")int followMemberNum, HttpServletRequest request)
 	{
 		log.info("----/profile/deleteFollow API 진입----");
 		String accessToken = request.getHeader("Authorization").substring(7);
-		int followMemberNum = (int)followData.get("followMemberNum");
 		
 		return profileService.deleteFollow(followMemberNum, accessToken);
 	}

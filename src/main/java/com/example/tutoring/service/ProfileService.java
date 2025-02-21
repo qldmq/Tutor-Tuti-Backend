@@ -125,20 +125,32 @@ public class ProfileService {
 				String nickname = (String) obj[1];
 				String profileImg = (String) obj[2];
 				String introduction = (String) obj[3];
-								
+							
+				//맞팔로우 상태
 				boolean status = true;
+				
+				//팔로우 확인
+				boolean followStatus = true;
 				
 				if(followMemberNum == myMemberNum)
 				{
 					if(followRepository.followCheck(memberNum, myMemberNum) != 1)
 						status= false;
 				}else {
+					//맞팔이 아닐때
 					if(followRepository.eachFollowCheck(followMemberNum, myMemberNum) != 2)
+					{
 						status = false;
+						
+						//로그인한 회원이 팔로우 하지 않았을때
+						if(followRepository.followCheck(myMemberNum,followMemberNum) != 1)
+							followStatus = false;
+					}																
 				}												
 				
+				
 								
-				followerList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction, status));
+				followerList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction, status, followStatus));
 			}
 
 			response.put("followList",followerList);
@@ -177,16 +189,28 @@ public class ProfileService {
 				
 				boolean status = true;
 				
+				boolean followStatus = true;
+				
 				if(followMemberNum == myMemberNum)
 				{
 					if(followRepository.followCheck(myMemberNum, memberNum) != 1)
+					{
 						status= false;
+						followStatus = false;
+					}
+						
 				}else {
 					if(followRepository.eachFollowCheck(followMemberNum, myMemberNum) != 2)
+					{
 						status = false;
+						
+						//로그인한 회원이 팔로우 하지 않았을때
+						if(followRepository.followCheck(myMemberNum,followMemberNum) != 1)
+							followStatus = false;
+					}
 				}				
 
-				followingList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction,status));
+				followingList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction,status, followStatus));
 			}
 			
 			response.put("followList",followingList);
@@ -242,6 +266,8 @@ public class ProfileService {
 				
 				boolean status = true;
 				
+				boolean followStatus = true;
+				
 				if(followMemberNum == myMemberNum)
 				{
 					if(followRepository.followCheck(memberNum, myMemberNum) != 1)
@@ -249,9 +275,14 @@ public class ProfileService {
 				}else {
 					if(followRepository.eachFollowCheck(followMemberNum, myMemberNum) != 2)
 						status = false;
+					
+					//로그인한 회원이 팔로우 하지 않았을때
+					if(followRepository.followCheck(myMemberNum,followMemberNum) != 1)
+						followStatus = false;
+					
 				}	
 				
-				followerList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction,status));
+				followerList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction, status, followStatus));
 			}
 			
 			
@@ -291,16 +322,25 @@ public class ProfileService {
 				
 				boolean status = true;
 				
+				boolean followStatus = true;
+				
 				if(followMemberNum == myMemberNum)
 				{
 					if(followRepository.followCheck(myMemberNum, memberNum) != 1)
+					{
 						status= false;
+						followStatus = false;
+					}
 				}else {
 					if(followRepository.eachFollowCheck(followMemberNum, myMemberNum) != 2)
 						status = false;
+					
+					//로그인한 회원이 팔로우 하지 않았을때
+					if(followRepository.followCheck(myMemberNum,followMemberNum) != 1)
+						followStatus = false;
 				}	
 				
-				followingList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction,status));
+				followingList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction,status, followStatus));
 			}
 
 			response.put("followList",followingList);
