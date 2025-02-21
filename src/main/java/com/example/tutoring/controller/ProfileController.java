@@ -162,4 +162,16 @@ public class ProfileController {
 		String accessToken = request.getHeader("Authorization").substring(7);
 		return profileService.lastNotice(observer, accessToken);
 	}
+
+	// 닉네임 변경
+	@PatchMapping("/nickname")
+	public ResponseEntity<Map<String, Object>> changeNickname(@RequestBody Map<String, Object> nicknameData, HttpServletRequest request) {
+
+		log.info("changeNickname api 진입");
+
+		String newNickname = nicknameData.get("nickname").toString();
+		String accessToken = request.getHeader("Authorization").substring(7);
+
+		return profileService.changeNickname(newNickname, accessToken);
+	}
 }
