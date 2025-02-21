@@ -470,9 +470,8 @@ public class ProfileService {
 			response.put("message", e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);		
 		}
-				
+
 	}
-	
 
 	// 닉네임 변경
 	public ResponseEntity<Map<String, Object>> changeNickname(String newNickname, String accessToken) {
@@ -497,6 +496,22 @@ public class ProfileService {
 			return ResponseEntity.status(HttpStatus.OK).build();
 		} else {
 			response.put("message", "회원 정보를 찾을 수 없습니다.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		}
+	}
+
+	public ResponseEntity<Map<String, Object>> introduction(String introductionData, String accessToken) {
+
+		Map<String, Object> response = new HashMap<>();
+		int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
+		Optional<Member> member =  memberRepository.findByMemberNum(memberNum);
+
+		try {
+			member.get().setIntroduction(introductionData);
+			memberRepository.save(member.get());
+			return ResponseEntity.status(HttpStatus.OK).build();
+		} catch (Exception e){
+			response.put("message", e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
 	}
