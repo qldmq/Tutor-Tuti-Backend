@@ -125,20 +125,32 @@ public class ProfileService {
 				String nickname = (String) obj[1];
 				String profileImg = (String) obj[2];
 				String introduction = (String) obj[3];
-								
+							
+				//맞팔로우 상태
 				boolean status = true;
+				
+				//팔로우 확인
+				boolean followStatus = true;
 				
 				if(followMemberNum == myMemberNum)
 				{
 					if(followRepository.followCheck(memberNum, myMemberNum) != 1)
 						status= false;
 				}else {
+					//맞팔이 아닐때
 					if(followRepository.eachFollowCheck(followMemberNum, myMemberNum) != 2)
+					{
 						status = false;
+						
+						//로그인한 회원이 팔로우 하지 않았을때
+						if(followRepository.followCheck(myMemberNum,followMemberNum) != 1)
+							followStatus = false;
+					}																
 				}												
 				
+				
 								
-				followerList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction, status));
+				followerList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction, status, followStatus));
 			}
 
 			response.put("followList",followerList);
@@ -177,16 +189,28 @@ public class ProfileService {
 				
 				boolean status = true;
 				
+				boolean followStatus = true;
+				
 				if(followMemberNum == myMemberNum)
 				{
 					if(followRepository.followCheck(myMemberNum, memberNum) != 1)
+					{
 						status= false;
+						followStatus = false;
+					}
+						
 				}else {
 					if(followRepository.eachFollowCheck(followMemberNum, myMemberNum) != 2)
+					{
 						status = false;
+						
+						//로그인한 회원이 팔로우 하지 않았을때
+						if(followRepository.followCheck(myMemberNum,followMemberNum) != 1)
+							followStatus = false;
+					}
 				}				
 
-				followingList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction,status));
+				followingList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction,status, followStatus));
 			}
 			
 			response.put("followList",followingList);
@@ -242,6 +266,8 @@ public class ProfileService {
 				
 				boolean status = true;
 				
+				boolean followStatus = true;
+				
 				if(followMemberNum == myMemberNum)
 				{
 					if(followRepository.followCheck(memberNum, myMemberNum) != 1)
@@ -249,9 +275,14 @@ public class ProfileService {
 				}else {
 					if(followRepository.eachFollowCheck(followMemberNum, myMemberNum) != 2)
 						status = false;
+					
+					//로그인한 회원이 팔로우 하지 않았을때
+					if(followRepository.followCheck(myMemberNum,followMemberNum) != 1)
+						followStatus = false;
+					
 				}	
 				
-				followerList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction,status));
+				followerList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction, status, followStatus));
 			}
 			
 			
@@ -291,16 +322,25 @@ public class ProfileService {
 				
 				boolean status = true;
 				
+				boolean followStatus = true;
+				
 				if(followMemberNum == myMemberNum)
 				{
 					if(followRepository.followCheck(myMemberNum, memberNum) != 1)
+					{
 						status= false;
+						followStatus = false;
+					}
 				}else {
 					if(followRepository.eachFollowCheck(followMemberNum, myMemberNum) != 2)
 						status = false;
+					
+					//로그인한 회원이 팔로우 하지 않았을때
+					if(followRepository.followCheck(myMemberNum,followMemberNum) != 1)
+						followStatus = false;
 				}	
 				
-				followingList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction,status));
+				followingList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction,status, followStatus));
 			}
 
 			response.put("followList",followingList);
@@ -433,4 +473,31 @@ public class ProfileService {
 				
 	}
 	
+
+	// 닉네임 변경
+	public ResponseEntity<Map<String, Object>> changeNickname(String newNickname, String accessToken) {
+
+		Map<String, Object> response = new HashMap<>();
+		int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
+
+		Optional<Member> member = memberRepository.findByMemberNum(memberNum);
+
+		if (!jwtTokenProvider.validateToken(accessToken)) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+
+		if (member.isPresent()) {
+			if (memberRepository.existsByNickname(newNickname)) {
+				response.put("message", "중복된 닉네임입니다.");
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+			}
+
+			member.get().setNickname(newNickname);
+			memberRepository.save(member.get());
+			return ResponseEntity.status(HttpStatus.OK).build();
+		} else {
+			response.put("message", "회원 정보를 찾을 수 없습니다.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		}
+	}
 }

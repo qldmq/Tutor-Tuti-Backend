@@ -15,4 +15,5 @@ public class FollowResponseDto {
     private String followProfileImg;
     private String introduction;
     private boolean status;
+    private boolean followStatus;
 }

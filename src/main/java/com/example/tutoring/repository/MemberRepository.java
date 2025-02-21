@@ -31,6 +31,12 @@ public interface MemberRepository extends JpaRepository<Member, Integer>{
     //PK로 ID값 조회
     @Query("SELECT m.memberId FROM Member m WHERE m.memberNum = :memberNum")
     String findMemberIdByMemberNum(Integer memberNum);
-    
+
     Optional<Member> findByNickname(String nickname);
+
+    @Query("SELECT COUNT(m) > 0 FROM Member m WHERE m.nickname = :nickname")
+    boolean existsByNickname(@Param("nickname") String nickname);
+
+
+    Optional<Member> findByMemberNum(int memberNum);
 }
