@@ -433,4 +433,31 @@ public class ProfileService {
 				
 	}
 	
+
+	// 닉네임 변경
+	public ResponseEntity<Map<String, Object>> changeNickname(String newNickname, String accessToken) {
+
+		Map<String, Object> response = new HashMap<>();
+		int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
+
+		Optional<Member> member = memberRepository.findByMemberNum(memberNum);
+
+		if (!jwtTokenProvider.validateToken(accessToken)) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+
+		if (member.isPresent()) {
+			if (memberRepository.existsByNickname(newNickname)) {
+				response.put("message", "중복된 닉네임입니다.");
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+			}
+
+			member.get().setNickname(newNickname);
+			memberRepository.save(member.get());
+			return ResponseEntity.status(HttpStatus.OK).build();
+		} else {
+			response.put("message", "회원 정보를 찾을 수 없습니다.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		}
+	}
 }
