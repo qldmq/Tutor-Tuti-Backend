@@ -5,11 +5,8 @@ import com.example.tutoring.entity.Notice;
 import com.example.tutoring.repository.NoticeRepository;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -470,7 +467,7 @@ public class ProfileService {
 			response.put("message", e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);		
 		}
-
+				
 	}
 
 	// 닉네임 변경
@@ -511,6 +508,34 @@ public class ProfileService {
 			memberRepository.save(member.get());
 			return ResponseEntity.status(HttpStatus.OK).build();
 		} catch (Exception e){
+			response.put("message", e.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		}
+	}
+
+	// 공지글 작성
+	public ResponseEntity<Map<String, Object>> writeNotice(String writeNotice, String accessToken) {
+
+		Map<String, Object> response = new HashMap<>();
+
+		if (!jwtTokenProvider.validateToken(accessToken)) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+
+		int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
+		Optional<Member> member = memberRepository.findByMemberNum(memberNum);
+
+		try {
+			Notice notice = new Notice();
+			notice.setContent(writeNotice);
+			notice.setMemberNum(memberNum);
+			notice.setCreateTime(new Date());
+			notice.setLikeCnt(0);
+			notice.setDisLikeCnt(0);
+			noticeRepository.save(notice);
+
+			return ResponseEntity.status(HttpStatus.OK).build();
+		} catch (Exception e) {
 			response.put("message", e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
