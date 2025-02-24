@@ -5,11 +5,8 @@ import com.example.tutoring.entity.Notice;
 import com.example.tutoring.repository.NoticeRepository;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -235,7 +232,7 @@ public class ProfileService {
 			int myMemberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
 			followRepository.unFollowMember(myMemberNum, followMemberNum);
 			responseMap.put("message", "언팔로우 성공");
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
+			return ResponseEntity.status(HttpStatus.OK).body(responseMap);
 		}catch(Exception e)
 		{
 			log.info(e.getMessage());
@@ -423,7 +420,7 @@ public class ProfileService {
 			response.put("profileImg", member.getProfileImg());
 			response.put("introduction",member.getIntroduction());
 			response.put("followCount", followCnt);
-			response.put("followerCnt", followerCnt);
+			response.put("followerCount", followerCnt);
 			response.put("noticeCount", noticeCnt);
 			
 			return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -472,7 +469,6 @@ public class ProfileService {
 		}
 				
 	}
-	
 
 	// 닉네임 변경
 	public ResponseEntity<Map<String, Object>> changeNickname(String newNickname, String accessToken) {
@@ -497,6 +493,53 @@ public class ProfileService {
 			return ResponseEntity.status(HttpStatus.OK).build();
 		} else {
 			response.put("message", "회원 정보를 찾을 수 없습니다.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		}
+	}
+
+	public ResponseEntity<Map<String, Object>> introduction(String introductionData, String accessToken) {
+
+		Map<String, Object> response = new HashMap<>();
+		int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
+		Optional<Member> member =  memberRepository.findByMemberNum(memberNum);
+
+		try {
+			member.get().setIntroduction(introductionData);
+			memberRepository.save(member.get());
+			return ResponseEntity.status(HttpStatus.OK).build();
+		} catch (Exception e){
+			response.put("message", e.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		}
+	}
+
+	// 공지글 작성
+	public ResponseEntity<Map<String, Object>> writeNotice(String writeNotice, String accessToken) {
+
+		Map<String, Object> response = new HashMap<>();
+
+		if (!jwtTokenProvider.validateToken(accessToken)) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+
+		int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
+		Optional<Member> member = memberRepository.findByMemberNum(memberNum);
+
+		try {
+			NoticeDto noticeDto = new NoticeDto();
+			noticeDto.setContent(writeNotice);
+			noticeDto.setMemberNum(memberNum);
+			noticeDto.setCreateTime(new Date());
+			noticeDto.setLikeCnt(0);
+			noticeDto.setDisLikeCnt(0);
+
+			Notice notice = Notice.toEntity(noticeDto);
+
+			noticeRepository.save(notice);
+
+			return ResponseEntity.status(HttpStatus.OK).build();
+		} catch (Exception e) {
+			response.put("message", e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
 	}

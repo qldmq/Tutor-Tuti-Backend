@@ -39,4 +39,7 @@ public interface MemberRepository extends JpaRepository<Member, Integer>{
 
 
     Optional<Member> findByMemberNum(int memberNum);
+
+    @Query("SELECT COUNT(m) > 0 FROM Member m WHERE m.memberNum = :memberNum")
+    boolean existsByMemberNum(@Param("memberNum") int memberNum);
 }

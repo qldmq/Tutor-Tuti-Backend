@@ -130,8 +130,9 @@ public class OAuthService {
 	        responseMap.put("access", accessToken);
 	        responseMap.put("hasNotice", false);
 	        responseMap.put("followCount", followCnt);
-		    responseMap.put("followerCnt", followerCnt);
+		    responseMap.put("followerCount", followerCnt);
 			responseMap.put("noticeCount", noticeCnt);   
+			
 			
 			return ResponseEntity.status(HttpStatus.OK).body(responseMap);
 			
@@ -232,8 +233,9 @@ public class OAuthService {
 			responseMap.put("access", accessToken);
 			responseMap.put("hasNotice", false);
 			responseMap.put("followCount", followCnt);
-			responseMap.put("followerCnt", followerCnt);
+			responseMap.put("followerCount", followerCnt);
 			responseMap.put("noticeCount", noticeCnt);
+						
 					
 			return ResponseEntity.status(HttpStatus.OK).body(responseMap);
 

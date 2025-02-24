@@ -172,4 +172,27 @@ public class ProfileController {
 
 		return profileService.changeNickname(newNickname, accessToken);
 	}
+
+	@PatchMapping("/introduction")
+	public ResponseEntity<Map<String, Object>> introduction(@RequestBody Map<String, Object> introductionData, HttpServletRequest request) {
+
+		log.info("introduction api 진입");
+
+		String newIntroduction = introductionData.get("introduction").toString();
+		String accessToken = request.getHeader("Authorization").substring(7);
+
+		return profileService.introduction(newIntroduction, accessToken);
+	}
+
+	// 공지글 작성
+	@PostMapping("/writeNotice")
+	public ResponseEntity<Map<String, Object>> writeNotice(@RequestBody Map<String, Object> writeNoticeData, HttpServletRequest request) {
+
+		log.info("writeNotice api 진입");
+
+		String writeNotice = writeNoticeData.get("noticeContent").toString();
+		String accessToken = request.getHeader("Authorization").substring(7);
+
+		return profileService.writeNotice(writeNotice, accessToken);
+	}
 }
