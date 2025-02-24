@@ -232,7 +232,7 @@ public class ProfileService {
 			int myMemberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
 			followRepository.unFollowMember(myMemberNum, followMemberNum);
 			responseMap.put("message", "언팔로우 성공");
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
+			return ResponseEntity.status(HttpStatus.OK).body(responseMap);
 		}catch(Exception e)
 		{
 			log.info(e.getMessage());
@@ -420,7 +420,7 @@ public class ProfileService {
 			response.put("profileImg", member.getProfileImg());
 			response.put("introduction",member.getIntroduction());
 			response.put("followCount", followCnt);
-			response.put("followerCnt", followerCnt);
+			response.put("followerCount", followerCnt);
 			response.put("noticeCount", noticeCnt);
 			
 			return ResponseEntity.status(HttpStatus.OK).body(response);
