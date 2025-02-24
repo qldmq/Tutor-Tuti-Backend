@@ -526,12 +526,15 @@ public class ProfileService {
 		Optional<Member> member = memberRepository.findByMemberNum(memberNum);
 
 		try {
-			Notice notice = new Notice();
-			notice.setContent(writeNotice);
-			notice.setMemberNum(memberNum);
-			notice.setCreateTime(new Date());
-			notice.setLikeCnt(0);
-			notice.setDisLikeCnt(0);
+			NoticeDto noticeDto = new NoticeDto();
+			noticeDto.setContent(writeNotice);
+			noticeDto.setMemberNum(memberNum);
+			noticeDto.setCreateTime(new Date());
+			noticeDto.setLikeCnt(0);
+			noticeDto.setDisLikeCnt(0);
+
+			Notice notice = Notice.toEntity(noticeDto);
+
 			noticeRepository.save(notice);
 
 			return ResponseEntity.status(HttpStatus.OK).build();
