@@ -183,4 +183,16 @@ public class ProfileController {
 
 		return profileService.introduction(newIntroduction, accessToken);
 	}
+
+	// 공지글 작성
+	@PostMapping("/writeNotice")
+	public ResponseEntity<Map<String, Object>> writeNotice(@RequestBody Map<String, Object> writeNoticeData, HttpServletRequest request) {
+
+		log.info("writeNotice api 진입");
+
+		String writeNotice = writeNoticeData.get("noticeContent").toString();
+		String accessToken = request.getHeader("Authorization").substring(7);
+
+		return profileService.writeNotice(writeNotice, accessToken);
+	}
 }
