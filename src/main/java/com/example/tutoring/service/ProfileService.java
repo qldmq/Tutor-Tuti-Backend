@@ -3,6 +3,8 @@ package com.example.tutoring.service;
 import com.example.tutoring.dto.NoticeDto;
 import com.example.tutoring.entity.Notice;
 import com.example.tutoring.repository.NoticeRepository;
+import com.example.tutoring.type.AlimType;
+
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
@@ -18,6 +20,7 @@ import com.example.tutoring.dto.MemberDto;
 import com.example.tutoring.entity.Follow;
 import com.example.tutoring.entity.Member;
 import com.example.tutoring.jwt.JwtTokenProvider;
+import com.example.tutoring.repository.AlimRepository;
 import com.example.tutoring.repository.FollowRepository;
 import com.example.tutoring.repository.MemberRepository;
 
@@ -39,6 +42,9 @@ public class ProfileService {
 
 	@Autowired
 	NoticeRepository noticeRepository;
+	
+	@Autowired
+	AlimService alimService;
 
 	public ResponseEntity<Map<String,Object>> profileImgUpdate(MultipartFile file , String accessToken)
 	{
@@ -93,7 +99,9 @@ public class ProfileService {
 						.build();
 				followRepository.save(Follow.toEntity(followDto));
 				log.info(me.get().getNickname()+" 가 "+followerNickName+"를 팔로우");
-
+				
+				alimService.sendAlim(follower.get().getMemberNum(),me.get().getNickname()+"님이 팔로우를 걸었습니다.", AlimType.TYPE_FOLLOW);
+				
 				return ResponseEntity.status(HttpStatus.OK).body(responseMap);
 			}
 
@@ -534,7 +542,7 @@ public class ProfileService {
 
 			Notice notice = Notice.toEntity(noticeDto);
 
-			noticeRepository.save(notice);
+			noticeRepository.save(notice);						
 
 			return ResponseEntity.status(HttpStatus.OK).build();
 		} catch (Exception e) {
