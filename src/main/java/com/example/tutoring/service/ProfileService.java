@@ -523,7 +523,6 @@ public class ProfileService {
 		}
 
 		int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
-		Optional<Member> member = memberRepository.findByMemberNum(memberNum);
 
 		try {
 			NoticeDto noticeDto = new NoticeDto();
@@ -542,5 +541,21 @@ public class ProfileService {
 			response.put("message", e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
+	}
+
+	// 공지글 삭제
+	public ResponseEntity<Map<String, Object>> deleteNotice(int noticeNum, String accessToken) {
+
+		Map<String, Object> response = new HashMap<>();
+
+		if (!jwtTokenProvider.validateToken(accessToken)) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+
+		Optional<Notice> notice = noticeRepository.findById(noticeNum);
+
+		noticeRepository.delete(notice.get());
+
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 }
