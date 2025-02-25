@@ -195,4 +195,16 @@ public class ProfileController {
 
 		return profileService.writeNotice(writeNotice, accessToken);
 	}
+
+	// 공지글 삭제
+	@DeleteMapping("/deleteNotice")
+	public ResponseEntity<Map<String, Object>> deleteNotice(@RequestBody Map<String, Object> noticeNumData, HttpServletRequest request) {
+
+		log.info("공지글 삭제 api 진입");
+
+		int noticeNum = Integer.parseInt(noticeNumData.get("noticeNum").toString());
+		String accessToken = request.getHeader("Authorization").substring(7);
+
+		return profileService.deleteNotice(noticeNum, accessToken);
+	}
 }
