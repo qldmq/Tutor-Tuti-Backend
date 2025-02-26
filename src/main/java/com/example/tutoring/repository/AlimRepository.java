@@ -1,6 +1,8 @@
 package com.example.tutoring.repository;
 
 import java.util.Date;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,4 +18,6 @@ public interface AlimRepository extends JpaRepository<Alim, Integer>{
 	@Query("SELECT COUNT(a) > 0 FROM Alim a WHERE a.memberNum = :memberNum AND a.isRead = false")
 	boolean existsUnreadAlim(@Param("memberNum") Integer memberNum);
 	
+	@Query("SELECT a FROM Alim a WHERE a.memberNum = :memberNum")
+	List<Alim> findAlimList(@Param("memberNum") Integer memberNum);
 }

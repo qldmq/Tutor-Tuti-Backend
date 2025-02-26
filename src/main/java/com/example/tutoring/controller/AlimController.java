@@ -2,6 +2,8 @@ package com.example.tutoring.controller;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -42,4 +44,14 @@ public class AlimController {
 	{
 		return alimService.delete(alimNum);
 	}
+	
+	@GetMapping("/list")
+	public  ResponseEntity<Map<String,Object>> list(HttpServletRequest request)
+	{
+		String accessToken = request.getHeader("Authorization").substring(7);
+		log.info("엑세스 토큰 : "+accessToken);
+		
+		return alimService.list(accessToken);
+	}
+
 }

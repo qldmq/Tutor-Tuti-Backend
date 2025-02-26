@@ -1,8 +1,10 @@
 package com.example.tutoring.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,10 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.example.tutoring.dto.AlimDto;
 import com.example.tutoring.entity.Alim;
+import com.example.tutoring.jwt.JwtTokenProvider;
 import com.example.tutoring.repository.AlimRepository;
 import com.example.tutoring.type.AlimType;
 
@@ -34,6 +38,9 @@ public class AlimService {
 	
 	@Autowired
 	private EntityManager entityManager;
+	
+	@Autowired
+	private JwtTokenProvider jwtTokenProvider;
 	
 	private final Map<Integer, SseEmitter> emitters = new ConcurrentHashMap<Integer, SseEmitter>();
 	
@@ -111,4 +118,27 @@ public class AlimService {
 		}
 	}
 	
+	public ResponseEntity<Map<String,Object>> list(String accessToken)
+	{		
+		Map<String,Object> response = new HashMap<String, Object>();	
+		
+		try {
+			int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
+			List<AlimDto> alimList = new ArrayList<>();
+			
+			for(Alim alim : alimRepository.findAlimList(memberNum))
+			{
+				alimList.add(AlimDto.toDto(alim));
+			}
+			
+			response.put("alimList", alimList);
+						
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		}catch(Exception e)
+		{
+			response.put("message", e.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		}		
+		
+	}
 }
