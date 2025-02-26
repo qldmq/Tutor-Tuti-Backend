@@ -2,7 +2,7 @@ package com.example.tutoring.service;
 
 import com.example.tutoring.dto.NoticeDto;
 import com.example.tutoring.entity.Notice;
-import com.example.tutoring.repository.NoticeRepository;
+import com.example.tutoring.repository.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
@@ -18,8 +18,6 @@ import com.example.tutoring.dto.MemberDto;
 import com.example.tutoring.entity.Follow;
 import com.example.tutoring.entity.Member;
 import com.example.tutoring.jwt.JwtTokenProvider;
-import com.example.tutoring.repository.FollowRepository;
-import com.example.tutoring.repository.MemberRepository;
 
 @Slf4j
 @Service
@@ -39,6 +37,12 @@ public class ProfileService {
 
 	@Autowired
 	NoticeRepository noticeRepository;
+
+	@Autowired
+	LikeNoticeRepository likeNoticeRepository;
+
+	@Autowired
+	DisLikeNoticeRepository disLikeNoticeRepository;
 
 	public ResponseEntity<Map<String,Object>> profileImgUpdate(MultipartFile file , String accessToken)
 	{
@@ -379,19 +383,27 @@ public class ProfileService {
 
 		Map<String, Object> response = new HashMap<>();
 
-		if (!jwtTokenProvider.validateToken(accessToken)) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-		}
-
 		try {
 			int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
+			Optional<Member> member = memberRepository.findByMemberNum(memberNum);
 
 			List<Notice> notices = noticeRepository.findByMemberNum(memberNum);
 
-			List<NoticeDto> noticeList = new ArrayList<>();
+			List<Map<String, Object>> noticeList = new ArrayList<>();
 
 			for(Notice notice:notices) {
-				noticeList.add(NoticeDto.toDto(notice));
+				Map<String, Object> noticeMap = new HashMap<>();
+
+				noticeMap.put("noticeNum", notice.getNoticeNum());
+				noticeMap.put("noticeContent", notice.getContent());
+				noticeMap.put("noticeWriter", member.get().getNickname());
+				noticeMap.put("noticeDate", notice.getCreateTime());
+				noticeMap.put("likeCount", notice.getLikeCnt());
+				noticeMap.put("disLikeCount", notice.getDisLikeCnt());
+				noticeMap.put("likeStatus", likeNoticeRepository.existsByNoticeNum(notice.getNoticeNum()) ? "true" : "false");
+				noticeMap.put("disLikeStatus", disLikeNoticeRepository.existsByNoticeNum(notice.getNoticeNum()) ? "true" : "false");
+
+				noticeList.add(noticeMap);
 			}
 
 			response.put("notices", noticeList);
