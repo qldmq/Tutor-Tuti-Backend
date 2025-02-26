@@ -25,7 +25,9 @@ public class AlimController {
 	AlimService alimService;
 	
 	@GetMapping(value="/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	public SseEmitter subscribe(@RequestParam("memberNum") Integer memberNum) {
+	public SseEmitter subscribe(@RequestParam("memberNum") Integer memberNum) {		
+		log.info(memberNum+"번 회원 연결 요청");
+		
 		return alimService.subscribe(memberNum);
 	}
 			

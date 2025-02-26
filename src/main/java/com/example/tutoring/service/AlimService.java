@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,8 +37,10 @@ public class AlimService {
 	
 	private final Map<Integer, SseEmitter> emitters = new ConcurrentHashMap<Integer, SseEmitter>();
 	
+	private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60; 
+	
 	public SseEmitter subscribe(Integer memberNum) {
-		SseEmitter emitter = new SseEmitter(60_000L);
+		SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
 		emitters.put(memberNum, emitter);
 		
 		emitter.onCompletion(() -> emitters.remove(memberNum));
@@ -68,6 +71,7 @@ public class AlimService {
 		}
 	}
 
+	@Transactional
 	public ResponseEntity<Map<String,Object>> read(Map<String,Object> alimData)
 	{
 		Map<String,Object> response = new HashMap<String, Object>();
@@ -90,6 +94,7 @@ public class AlimService {
 								
 	}
 	
+	@Transactional
 	public ResponseEntity<Map<String,Object>> delete(int alimNum)
 	{
 		Map<String,Object> response = new HashMap<String, Object>();

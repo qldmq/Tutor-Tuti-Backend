@@ -13,4 +13,7 @@ public interface AlimRepository extends JpaRepository<Alim, Integer>{
 	@Query("UPDATE Alim a SET a.readTime = :readTime, a.isRead = :isRead WHERE a.alimNum = :alimNum")
 	void readAlim(@Param("readTime")Date readTime, @Param("isRead")boolean isRead, @Param("alimNum")Integer alimNum);
 	
+	@Query("SELECT COUNT(a) > 0 FROM Alim a WHERE a.memberNum = :memberNum AND a.isRead = false")
+	boolean existsUnreadAlim(@Param("memberNum") Integer memberNum);
+	
 }
