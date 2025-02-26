@@ -283,7 +283,7 @@ public class ProfileService {
 			}
 			
 			
-			response.put("followList",followerList);
+			response.put("searchFollowList",followerList);
 			
 			if(followerList.size() < pageSize)
 				response.put("flag", true);
@@ -340,7 +340,7 @@ public class ProfileService {
 				followingList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction,status, followStatus));
 			}
 
-			response.put("followList",followingList);
+			response.put("searchFollowList",followingList);
 			
 			if(followingList.size() < pageSize)
 				response.put("flag", true);
