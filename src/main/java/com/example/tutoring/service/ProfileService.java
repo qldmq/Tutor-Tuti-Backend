@@ -247,7 +247,8 @@ public class ProfileService {
 		Map<String,Object> response = new HashMap<String, Object>();
 		
 		try {
-			searchName+="%";
+			if(!searchName.equals(""))
+				searchName+="%";
 			int pageSize = 10;
 			int offset = observer * pageSize;
 
@@ -303,7 +304,8 @@ public class ProfileService {
 		Map<String,Object> response = new HashMap<String, Object>();
 		
 		try {
-			searchName+="%";
+			if(!searchName.equals(""))
+				searchName+="%";
 			int pageSize = 10;
 			int offset = observer * pageSize;
 			
