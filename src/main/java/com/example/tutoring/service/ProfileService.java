@@ -255,7 +255,8 @@ public class ProfileService {
 		Map<String,Object> response = new HashMap<String, Object>();
 		
 		try {
-			searchName+="%";
+			if(!searchName.equals(""))
+				searchName+="%";
 			int pageSize = 10;
 			int offset = observer * pageSize;
 
@@ -291,7 +292,7 @@ public class ProfileService {
 			}
 			
 			
-			response.put("followList",followerList);
+			response.put("searchFollowList",followerList);
 			
 			if(followerList.size() < pageSize)
 				response.put("flag", true);
@@ -311,7 +312,8 @@ public class ProfileService {
 		Map<String,Object> response = new HashMap<String, Object>();
 		
 		try {
-			searchName+="%";
+			if(!searchName.equals(""))
+				searchName+="%";
 			int pageSize = 10;
 			int offset = observer * pageSize;
 			
@@ -348,7 +350,7 @@ public class ProfileService {
 				followingList.add(new FollowResponseDto(followMemberNum, nickname, profileImg, introduction,status, followStatus));
 			}
 
-			response.put("followList",followingList);
+			response.put("searchFollowList",followingList);
 			
 			if(followingList.size() < pageSize)
 				response.put("flag", true);
