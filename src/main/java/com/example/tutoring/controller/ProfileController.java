@@ -207,4 +207,14 @@ public class ProfileController {
 
 		return profileService.deleteNotice(noticeNum, accessToken);
 	}
+
+	// 공지글 좋아요
+	@PatchMapping("/likeNotice")
+	public ResponseEntity<Map<String, Object>> likeNotice(@RequestBody Map<String, Object> noticeNumData, HttpServletRequest request) {
+
+		int noticeNum = Integer.parseInt(noticeNumData.get("noticeNum").toString());
+		String accessToken = request.getHeader("Authorization").substring(7);
+
+		return profileService.likeNotice(noticeNum, accessToken);
+	}
 }
