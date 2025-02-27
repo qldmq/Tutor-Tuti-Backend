@@ -1,20 +1,26 @@
 package com.example.tutoring.service;
 
+
+import com.example.tutoring.dto.NoticeDto;
+import com.example.tutoring.entity.Notice;
+import com.example.tutoring.repository.NoticeRepository;
+import com.example.tutoring.type.AlimType;
 import com.example.tutoring.dto.*;
 import com.example.tutoring.entity.*;
 import com.example.tutoring.repository.*;
 import lombok.extern.slf4j.Slf4j;
-
 import java.util.*;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.example.tutoring.jwt.JwtTokenProvider;
-
+import com.example.tutoring.repository.AlimRepository;
+import com.example.tutoring.repository.FollowRepository;
+import com.example.tutoring.repository.MemberRepository;
 import javax.transaction.Transactional;
+
 
 @Slf4j
 @Service
@@ -34,6 +40,9 @@ public class ProfileService {
 
 	@Autowired
 	NoticeRepository noticeRepository;
+	
+	@Autowired
+	AlimService alimService;
 
 	@Autowired
 	LikeNoticeRepository likeNoticeRepository;
@@ -94,7 +103,9 @@ public class ProfileService {
 						.build();
 				followRepository.save(Follow.toEntity(followDto));
 				log.info(me.get().getNickname()+" 가 "+followerNickName+"를 팔로우");
-
+				
+				alimService.sendAlim(follower.get().getMemberNum(),me.get().getNickname()+"님이 팔로우를 걸었습니다.", AlimType.TYPE_FOLLOW);
+				
 				return ResponseEntity.status(HttpStatus.OK).body(responseMap);
 			}
 
@@ -550,7 +561,7 @@ public class ProfileService {
 
 			Notice notice = Notice.toEntity(noticeDto);
 
-			noticeRepository.save(notice);
+			noticeRepository.save(notice);						
 
 			return ResponseEntity.status(HttpStatus.OK).build();
 		} catch (Exception e) {

@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import com.example.tutoring.dto.MemberDto;
 import com.example.tutoring.entity.Member;
 import com.example.tutoring.jwt.JwtTokenProvider;
+import com.example.tutoring.repository.AlimRepository;
 import com.example.tutoring.repository.FollowRepository;
 import com.example.tutoring.repository.MemberRepository;
 import com.example.tutoring.repository.NoticeRepository;
@@ -40,6 +41,9 @@ public class OAuthService {
 	
 	@Autowired
 	private NoticeRepository noticeRepository;
+	
+	@Autowired
+	private AlimRepository alimRepository;
 	
 	@Autowired
 	private JwtTokenProvider jwtTokenProvider;
@@ -122,13 +126,15 @@ public class OAuthService {
 			followCnt = followRepository.followingCount(member.getMemberNum());
 			noticeCnt = noticeRepository.noticeCount(member.getMemberNum());
 	        
+			boolean hasAlim = alimRepository.existsUnreadAlim(member.getMemberNum());
+			
 	        responseMap.put("memberNum", member.getMemberNum());
 	        responseMap.put("loginType", member.getLoginType());
 	        responseMap.put("nickname", member.getNickname());
 	        responseMap.put("profileImg", member.getProfileImg());
 	        responseMap.put("introduction", member.getIntroduction());
 	        responseMap.put("access", accessToken);
-	        responseMap.put("hasNotice", false);
+	        responseMap.put("hasAlim", hasAlim);
 	        responseMap.put("followCount", followCnt);
 		    responseMap.put("followerCount", followerCnt);
 			responseMap.put("noticeCount", noticeCnt);   
@@ -224,6 +230,8 @@ public class OAuthService {
 			followCnt = followRepository.followingCount(member.getMemberNum());
 			noticeCnt = noticeRepository.noticeCount(member.getMemberNum());
 			
+			boolean hasAlim = alimRepository.existsUnreadAlim(member.getMemberNum());
+			
 			// 5. 반환 데이터 설정
 			responseMap.put("memberNum", member.getMemberNum());
 			responseMap.put("loginType", member.getLoginType());
@@ -231,7 +239,7 @@ public class OAuthService {
 			responseMap.put("profileImg", member.getProfileImg());
 			responseMap.put("introduction", member.getIntroduction());
 			responseMap.put("access", accessToken);
-			responseMap.put("hasNotice", false);
+			responseMap.put("hasAlim", hasAlim);
 			responseMap.put("followCount", followCnt);
 			responseMap.put("followerCount", followerCnt);
 			responseMap.put("noticeCount", noticeCnt);
