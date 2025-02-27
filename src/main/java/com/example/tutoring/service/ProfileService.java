@@ -1,28 +1,26 @@
 package com.example.tutoring.service;
 
+
 import com.example.tutoring.dto.NoticeDto;
 import com.example.tutoring.entity.Notice;
 import com.example.tutoring.repository.NoticeRepository;
 import com.example.tutoring.type.AlimType;
-
+import com.example.tutoring.dto.*;
+import com.example.tutoring.entity.*;
+import com.example.tutoring.repository.*;
 import lombok.extern.slf4j.Slf4j;
-
 import java.util.*;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import com.example.tutoring.dto.FollowDto;
-import com.example.tutoring.dto.FollowResponseDto;
-import com.example.tutoring.dto.MemberDto;
-import com.example.tutoring.entity.Follow;
-import com.example.tutoring.entity.Member;
 import com.example.tutoring.jwt.JwtTokenProvider;
 import com.example.tutoring.repository.AlimRepository;
 import com.example.tutoring.repository.FollowRepository;
 import com.example.tutoring.repository.MemberRepository;
+import javax.transaction.Transactional;
+
 
 @Slf4j
 @Service
@@ -45,6 +43,12 @@ public class ProfileService {
 	
 	@Autowired
 	AlimService alimService;
+
+	@Autowired
+	LikeNoticeRepository likeNoticeRepository;
+
+	@Autowired
+	DisLikeNoticeRepository disLikeNoticeRepository;
 
 	public ResponseEntity<Map<String,Object>> profileImgUpdate(MultipartFile file , String accessToken)
 	{
@@ -382,27 +386,40 @@ public class ProfileService {
 		}
 	}
 
-	// 내가 작성한 공지글
-	public ResponseEntity<Map<String, Object>> myNotice(String accessToken) {
+	// 작성한 공지글
+	public ResponseEntity<Map<String, Object>> myNotice(Integer observer, int memberNum) {
 
 		Map<String, Object> response = new HashMap<>();
 
-		if (!jwtTokenProvider.validateToken(accessToken)) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-		}
-
 		try {
-			int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
+			Optional<Member> member = memberRepository.findByMemberNum(memberNum);
 
-			List<Notice> notices = noticeRepository.findByMemberNum(memberNum);
+			int pageSize = 6;
+			int offset = observer * pageSize;
 
-			List<NoticeDto> noticeList = new ArrayList<>();
+			List<Object[]> notices = noticeRepository.findByMemberNumWithPagination(memberNum, pageSize, offset);
 
-			for(Notice notice:notices) {
-				noticeList.add(NoticeDto.toDto(notice));
+			List<Map<String, Object>> noticeList = new ArrayList<>();
+
+			for(Object[] notice:notices) {
+				Map<String, Object> noticeMap = new LinkedHashMap<>();
+
+				noticeMap.put("noticeNum", notice[0]);
+				noticeMap.put("noticeContent", notice[1]);
+				noticeMap.put("noticeWriter", member.get().getNickname());
+				noticeMap.put("noticeDate", notice[3]);
+				noticeMap.put("likeCount", notice[4]);
+				noticeMap.put("disLikeCount", notice[5]);
+
+				noticeMap.put("likeStatus", likeNoticeRepository.existsByNoticeNum((Integer) notice[0]) ? "true" : "false");
+				noticeMap.put("disLikeStatus", disLikeNoticeRepository.existsByNoticeNum((Integer) notice[0]) ? "true" : "false");
+
+				noticeList.add(noticeMap);
 			}
 
 			response.put("notices", noticeList);
+			response.put("flag", notices.size() < pageSize);
+
 			return ResponseEntity.status(HttpStatus.OK).body(response);
 
 		} catch (Exception e) {
@@ -565,6 +582,48 @@ public class ProfileService {
 		Optional<Notice> notice = noticeRepository.findById(noticeNum);
 
 		noticeRepository.delete(notice.get());
+
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
+	// 공지글 좋아요
+	@Transactional
+	public ResponseEntity<Map<String, Object>> likeNotice(int noticeNum, String accessToken) {
+
+		int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
+		int likeCnt = noticeRepository.findLikeCntByNoticeNum(noticeNum) + 1;
+
+		noticeRepository.updateLikeCount(noticeNum, likeCnt);
+
+		LikeNoticeDto likeNoticeDto = new LikeNoticeDto();
+		likeNoticeDto.setMemberNum(memberNum);
+		likeNoticeDto.setNoticeNum(noticeNum);
+		likeNoticeDto.setLikedAt(new Date());
+
+		LikeNotice likeNotice = LikeNotice.toEntity(likeNoticeDto);
+
+		likeNoticeRepository.save(likeNotice);
+
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
+	// 공지글 싫어요
+	@Transactional
+	public ResponseEntity<Map<String, Object>> disLikeNotice(int noticeNum, String accessToken) {
+
+		int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
+		int disLikeCnt = noticeRepository.finddisLikeCntByNoticeNum(noticeNum) + 1;
+
+		noticeRepository.updateDisLikeCount(noticeNum, disLikeCnt);
+
+		DisLikeNoticeDto disLikeNoticeDto = new DisLikeNoticeDto();
+		disLikeNoticeDto.setMemberNum(memberNum);
+		disLikeNoticeDto.setNoticeNum(noticeNum);
+		disLikeNoticeDto.setDislikedAt(new Date());
+
+		DisLikeNotice disLikeNotice = DisLikeNotice.toEntity(disLikeNoticeDto);
+
+		disLikeNoticeRepository.save(disLikeNotice);
 
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
