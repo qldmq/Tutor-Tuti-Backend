@@ -375,35 +375,40 @@ public class ProfileService {
 		}
 	}
 
-	// 내가 작성한 공지글
-	public ResponseEntity<Map<String, Object>> myNotice(String accessToken) {
+	// 작성한 공지글
+	public ResponseEntity<Map<String, Object>> myNotice(Integer observer, int memberNum) {
 
 		Map<String, Object> response = new HashMap<>();
 
 		try {
-			int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
 			Optional<Member> member = memberRepository.findByMemberNum(memberNum);
 
-			List<Notice> notices = noticeRepository.findByMemberNum(memberNum);
+			int pageSize = 6;
+			int offset = observer * pageSize;
+
+			List<Object[]> notices = noticeRepository.findByMemberNumWithPagination(memberNum, pageSize, offset);
 
 			List<Map<String, Object>> noticeList = new ArrayList<>();
 
-			for(Notice notice:notices) {
-				Map<String, Object> noticeMap = new HashMap<>();
+			for(Object[] notice:notices) {
+				Map<String, Object> noticeMap = new LinkedHashMap<>();
 
-				noticeMap.put("noticeNum", notice.getNoticeNum());
-				noticeMap.put("noticeContent", notice.getContent());
+				noticeMap.put("noticeNum", notice[0]);
+				noticeMap.put("noticeContent", notice[1]);
 				noticeMap.put("noticeWriter", member.get().getNickname());
-				noticeMap.put("noticeDate", notice.getCreateTime());
-				noticeMap.put("likeCount", notice.getLikeCnt());
-				noticeMap.put("disLikeCount", notice.getDisLikeCnt());
-				noticeMap.put("likeStatus", likeNoticeRepository.existsByNoticeNum(notice.getNoticeNum()) ? "true" : "false");
-				noticeMap.put("disLikeStatus", disLikeNoticeRepository.existsByNoticeNum(notice.getNoticeNum()) ? "true" : "false");
+				noticeMap.put("noticeDate", notice[3]);
+				noticeMap.put("likeCount", notice[4]);
+				noticeMap.put("disLikeCount", notice[5]);
+
+				noticeMap.put("likeStatus", likeNoticeRepository.existsByNoticeNum((Integer) notice[0]) ? "true" : "false");
+				noticeMap.put("disLikeStatus", disLikeNoticeRepository.existsByNoticeNum((Integer) notice[0]) ? "true" : "false");
 
 				noticeList.add(noticeMap);
 			}
 
 			response.put("notices", noticeList);
+			response.put("flag", notices.size() < pageSize);
+
 			return ResponseEntity.status(HttpStatus.OK).body(response);
 
 		} catch (Exception e) {
