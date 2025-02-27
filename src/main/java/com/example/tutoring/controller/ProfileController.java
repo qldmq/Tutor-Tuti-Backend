@@ -130,17 +130,16 @@ public class ProfileController {
 		return profileService.deleteFollow(followMemberNum, accessToken);
 	}
 
-	// 내가 작성한 공지글
+	// 작성한 공지글
 	@GetMapping("/myNotice")
-	public ResponseEntity<Map<String, Object>> myNotice(HttpServletRequest request) {
+	public ResponseEntity<Map<String, Object>> myNotice(@RequestParam("observer") Integer observer, @RequestParam("memberNum") int memberNum) {
 
 		log.info("myNotice api 진입");
 
-		String accessToken = request.getHeader("Authorization").substring(7);
-
-		return profileService.myNotice(accessToken);
+		return profileService.myNotice(observer, memberNum);
 	}
-	
+
+
 	//회원 프로필 조회
 	@GetMapping("/profileInfo")
 	public ResponseEntity<Map<String,Object>> profileInfo(@RequestParam("memberNum")int memberNum)
