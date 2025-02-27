@@ -1,6 +1,7 @@
 package com.example.tutoring.service;
 
-import com.example.tutoring.dto.NoticeDto;
+import com.example.tutoring.dto.*;
+import com.example.tutoring.entity.LikeNotice;
 import com.example.tutoring.entity.Notice;
 import com.example.tutoring.repository.*;
 import lombok.extern.slf4j.Slf4j;
@@ -12,12 +13,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import com.example.tutoring.dto.FollowDto;
-import com.example.tutoring.dto.FollowResponseDto;
-import com.example.tutoring.dto.MemberDto;
 import com.example.tutoring.entity.Follow;
 import com.example.tutoring.entity.Member;
 import com.example.tutoring.jwt.JwtTokenProvider;
+
+import javax.transaction.Transactional;
 
 @Slf4j
 @Service
@@ -569,6 +569,27 @@ public class ProfileService {
 		Optional<Notice> notice = noticeRepository.findById(noticeNum);
 
 		noticeRepository.delete(notice.get());
+
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
+	// 공지글 좋아요
+	@Transactional
+	public ResponseEntity<Map<String, Object>> likeNotice(int noticeNum, String accessToken) {
+
+		int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
+		int likeCnt = noticeRepository.findLikeCntByNoticeNum(noticeNum) + 1;
+
+		noticeRepository.updateLikeCount(noticeNum, likeCnt);
+
+		LikeNoticeDto likeNoticeDto = new LikeNoticeDto();
+		likeNoticeDto.setMemberNum(memberNum);
+		likeNoticeDto.setNoticeNum(noticeNum);
+		likeNoticeDto.setLikedAt(new Date());
+
+		LikeNotice likeNotice = LikeNotice.toEntity(likeNoticeDto);
+
+		likeNoticeRepository.save(likeNotice);
 
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
