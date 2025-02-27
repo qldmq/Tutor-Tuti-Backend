@@ -1,8 +1,7 @@
 package com.example.tutoring.service;
 
 import com.example.tutoring.dto.*;
-import com.example.tutoring.entity.LikeNotice;
-import com.example.tutoring.entity.Notice;
+import com.example.tutoring.entity.*;
 import com.example.tutoring.repository.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,8 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import com.example.tutoring.entity.Follow;
-import com.example.tutoring.entity.Member;
 import com.example.tutoring.jwt.JwtTokenProvider;
 
 import javax.transaction.Transactional;
@@ -590,6 +587,27 @@ public class ProfileService {
 		LikeNotice likeNotice = LikeNotice.toEntity(likeNoticeDto);
 
 		likeNoticeRepository.save(likeNotice);
+
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
+	// 공지글 싫어요
+	@Transactional
+	public ResponseEntity<Map<String, Object>> disLikeNotice(int noticeNum, String accessToken) {
+
+		int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
+		int disLikeCnt = noticeRepository.finddisLikeCntByNoticeNum(noticeNum) + 1;
+
+		noticeRepository.updateDisLikeCount(noticeNum, disLikeCnt);
+
+		DisLikeNoticeDto disLikeNoticeDto = new DisLikeNoticeDto();
+		disLikeNoticeDto.setMemberNum(memberNum);
+		disLikeNoticeDto.setNoticeNum(noticeNum);
+		disLikeNoticeDto.setDislikedAt(new Date());
+
+		DisLikeNotice disLikeNotice = DisLikeNotice.toEntity(disLikeNoticeDto);
+
+		disLikeNoticeRepository.save(disLikeNotice);
 
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
