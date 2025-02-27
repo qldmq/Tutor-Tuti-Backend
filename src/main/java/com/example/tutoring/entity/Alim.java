@@ -3,6 +3,8 @@ package com.example.tutoring.entity;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -36,6 +38,7 @@ public class Alim {
 	@Column(name="alimMsg")
 	private String alimMsg;
 	
+	@Enumerated(EnumType.STRING)
 	@Column(name="alimType")
 	private AlimType alimType;
 	

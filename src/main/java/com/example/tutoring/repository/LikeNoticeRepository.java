@@ -15,5 +15,4 @@ public interface LikeNoticeRepository extends JpaRepository<LikeNotice, Integer>
     boolean existsByNoticeNum(@Param("noticeNum") int noticeNum);
 
 
-
 }

@@ -24,7 +24,21 @@ public interface NoticeRepository extends JpaRepository<Notice, Integer> {
     @Query("SELECT n.likeCnt FROM Notice n WHERE n.noticeNum = :noticeNum")
     Integer findLikeCntByNoticeNum(int noticeNum);
 
+    @Query("SELECT n.disLikeCnt FROM Notice n WHERE n.noticeNum = :noticeNum")
+    Integer finddisLikeCntByNoticeNum(int noticeNum);
+
     @Modifying
     @Query("UPDATE Notice n SET n.likeCnt = :likeCnt WHERE n.noticeNum = :noticeNum")
     void updateLikeCount(@Param("noticeNum") int noticeNum, @Param("likeCnt") int likeCnt);
+
+    @Query(value = "SELECT n.noticeNum, n.memberNum, n.content, n.createTime, n.likeCnt, n.disLikeCnt " +
+            "FROM notice n WHERE n.memberNum = :memberNum " +
+            "ORDER BY n.createTime DESC " +
+            "LIMIT :pageSize OFFSET :offset", nativeQuery = true)
+    List<Object[]> findByMemberNumWithPagination(@Param("memberNum") int memberNum, @Param("pageSize") int pageSize, @Param("offset") int offset);
+
+    @Modifying
+    @Query("UPDATE Notice n SET n.disLikeCnt = :disLikeCnt WHERE n.noticeNum = :noticeNum")
+    void updateDisLikeCount(@Param("noticeNum") int noticeNum, @Param("disLikeCnt") int disLikeCnt);
+
 }
