@@ -216,4 +216,16 @@ public class ProfileController {
 
 		return profileService.likeNotice(noticeNum, accessToken);
 	}
+
+	// 공지글 싫어요
+	@PatchMapping("/disLikeNotice")
+	public ResponseEntity<Map<String, Object>> disLikeNotice(@RequestBody Map<String, Object> noticeNumData, HttpServletRequest request) {
+
+		log.info("disLikeNotice api 진입");
+
+		int noticeNum = Integer.parseInt(noticeNumData.get("noticeNum").toString());
+		String accessToken = request.getHeader("Authorization").substring(7);
+
+		return profileService.disLikeNotice(noticeNum, accessToken);
+	}
 }
