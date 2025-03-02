@@ -25,7 +25,7 @@ public interface NoticeRepository extends JpaRepository<Notice, Integer> {
     Integer findLikeCntByNoticeNum(int noticeNum);
 
     @Query("SELECT n.disLikeCnt FROM Notice n WHERE n.noticeNum = :noticeNum")
-    Integer finddisLikeCntByNoticeNum(int noticeNum);
+    Integer findDisLikeCntByNoticeNum(int noticeNum);
 
     @Modifying
     @Query("UPDATE Notice n SET n.likeCnt = :likeCnt WHERE n.noticeNum = :noticeNum")

@@ -387,7 +387,7 @@ public class ProfileService {
 	}
 
 	// 작성한 공지글
-	public ResponseEntity<Map<String, Object>> myNotice(Integer observer, int memberNum) {
+	public ResponseEntity<Map<String, Object>> notice(Integer observer, int memberNum) {
 
 		Map<String, Object> response = new HashMap<>();
 
@@ -405,14 +405,14 @@ public class ProfileService {
 				Map<String, Object> noticeMap = new LinkedHashMap<>();
 
 				noticeMap.put("noticeNum", notice[0]);
-				noticeMap.put("noticeContent", notice[1]);
+				noticeMap.put("noticeContent", notice[2]);
 				noticeMap.put("noticeWriter", member.get().getNickname());
 				noticeMap.put("noticeDate", notice[3]);
 				noticeMap.put("likeCount", notice[4]);
 				noticeMap.put("disLikeCount", notice[5]);
 
-				noticeMap.put("likeStatus", likeNoticeRepository.existsByNoticeNum((Integer) notice[0]) ? "true" : "false");
-				noticeMap.put("disLikeStatus", disLikeNoticeRepository.existsByNoticeNum((Integer) notice[0]) ? "true" : "false");
+				noticeMap.put("likeStatus", likeNoticeRepository.existsByNoticeNum((Integer) notice[0]));
+				noticeMap.put("disLikeStatus", disLikeNoticeRepository.existsByNoticeNum((Integer) notice[0]));
 
 				noticeList.add(noticeMap);
 			}
@@ -591,20 +591,29 @@ public class ProfileService {
 	public ResponseEntity<Map<String, Object>> likeNotice(int noticeNum, String accessToken) {
 
 		int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
-		int likeCnt = noticeRepository.findLikeCntByNoticeNum(noticeNum) + 1;
+		boolean isLiked = likeNoticeRepository.existsByMemberNumAndNoticeNum(memberNum, noticeNum);
 
-		noticeRepository.updateLikeCount(noticeNum, likeCnt);
+		if (isLiked) {
+			noticeRepository.updateLikeCount(noticeNum, noticeRepository.findLikeCntByNoticeNum(noticeNum) - 1);
+			likeNoticeRepository.deleteByMemberNumAndNoticeNum(memberNum, noticeNum);
 
-		LikeNoticeDto likeNoticeDto = new LikeNoticeDto();
-		likeNoticeDto.setMemberNum(memberNum);
-		likeNoticeDto.setNoticeNum(noticeNum);
-		likeNoticeDto.setLikedAt(new Date());
+			return ResponseEntity.status(HttpStatus.OK).build();
+		} else {
+			int likeCnt = noticeRepository.findLikeCntByNoticeNum(noticeNum) + 1;
 
-		LikeNotice likeNotice = LikeNotice.toEntity(likeNoticeDto);
+			noticeRepository.updateLikeCount(noticeNum, likeCnt);
 
-		likeNoticeRepository.save(likeNotice);
+			LikeNoticeDto likeNoticeDto = new LikeNoticeDto();
+			likeNoticeDto.setMemberNum(memberNum);
+			likeNoticeDto.setNoticeNum(noticeNum);
+			likeNoticeDto.setLikedAt(new Date());
 
-		return ResponseEntity.status(HttpStatus.OK).build();
+			LikeNotice likeNotice = LikeNotice.toEntity(likeNoticeDto);
+
+			likeNoticeRepository.save(likeNotice);
+
+			return ResponseEntity.status(HttpStatus.OK).build();
+		}
 	}
 
 	// 공지글 싫어요
@@ -612,19 +621,27 @@ public class ProfileService {
 	public ResponseEntity<Map<String, Object>> disLikeNotice(int noticeNum, String accessToken) {
 
 		int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
-		int disLikeCnt = noticeRepository.finddisLikeCntByNoticeNum(noticeNum) + 1;
+		boolean isDisLiked = disLikeNoticeRepository.existsByMemberNumAndNoticeNum(memberNum, noticeNum);
 
-		noticeRepository.updateDisLikeCount(noticeNum, disLikeCnt);
+		if (isDisLiked) {
 
-		DisLikeNoticeDto disLikeNoticeDto = new DisLikeNoticeDto();
-		disLikeNoticeDto.setMemberNum(memberNum);
-		disLikeNoticeDto.setNoticeNum(noticeNum);
-		disLikeNoticeDto.setDislikedAt(new Date());
+			disLikeNoticeRepository.deleteByMemberNumAnAndNoticeNum(memberNum, noticeNum);
+			noticeRepository.updateDisLikeCount(noticeNum, noticeRepository.findDisLikeCntByNoticeNum(noticeNum) - 1);
 
-		DisLikeNotice disLikeNotice = DisLikeNotice.toEntity(disLikeNoticeDto);
+			return ResponseEntity.status(HttpStatus.OK).build();
+		} else {
+			noticeRepository.updateDisLikeCount(noticeNum, noticeRepository.findDisLikeCntByNoticeNum(noticeNum) + 1);
 
-		disLikeNoticeRepository.save(disLikeNotice);
+			DisLikeNoticeDto disLikeNoticeDto = new DisLikeNoticeDto();
+			disLikeNoticeDto.setMemberNum(memberNum);
+			disLikeNoticeDto.setNoticeNum(noticeNum);
+			disLikeNoticeDto.setDislikedAt(new Date());
 
-		return ResponseEntity.status(HttpStatus.OK).build();
+			DisLikeNotice disLikeNotice = DisLikeNotice.toEntity(disLikeNoticeDto);
+
+			disLikeNoticeRepository.save(disLikeNotice);
+
+			return ResponseEntity.status(HttpStatus.OK).build();
+		}
 	}
 }
