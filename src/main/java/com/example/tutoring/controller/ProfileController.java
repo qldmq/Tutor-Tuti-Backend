@@ -131,12 +131,12 @@ public class ProfileController {
 	}
 
 	// 작성한 공지글
-	@GetMapping("/myNotice")
-	public ResponseEntity<Map<String, Object>> myNotice(@RequestParam("observer") Integer observer, @RequestParam("memberNum") int memberNum) {
+	@GetMapping("/notice")
+	public ResponseEntity<Map<String, Object>> notice(@RequestParam("observer") Integer observer, @RequestParam("memberNum") int memberNum) {
 
 		log.info("myNotice api 진입");
 
-		return profileService.myNotice(observer, memberNum);
+		return profileService.notice(observer, memberNum);
 	}
 
 
@@ -197,11 +197,10 @@ public class ProfileController {
 
 	// 공지글 삭제
 	@DeleteMapping("/deleteNotice")
-	public ResponseEntity<Map<String, Object>> deleteNotice(@RequestBody Map<String, Object> noticeNumData, HttpServletRequest request) {
+	public ResponseEntity<Map<String, Object>> deleteNotice(@RequestParam("noticeNum") int noticeNum, HttpServletRequest request) {
 
 		log.info("공지글 삭제 api 진입");
 
-		int noticeNum = Integer.parseInt(noticeNumData.get("noticeNum").toString());
 		String accessToken = request.getHeader("Authorization").substring(7);
 
 		return profileService.deleteNotice(noticeNum, accessToken);
