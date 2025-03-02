@@ -75,7 +75,7 @@ public interface FollowRepository extends JpaRepository<Follow, Integer> {
   	@Query("SELECT COUNT(f) FROM Follow f WHERE f.followerMemberNum = :memberNum")
   	int followingCount(@Param("memberNum") int memberNum);
   	  	
-  	@Query(value = "SELECT m.memberNum, m.nickname, m.profileImg " +
+  	@Query(value = "SELECT DISTINCT m.memberNum, m.nickname, m.profileImg " +
             "FROM member m " +
             "JOIN follow f ON m.memberNum = f.followingMemberNum " +
             "JOIN notice n ON m.memberNum = n.memberNum " +
