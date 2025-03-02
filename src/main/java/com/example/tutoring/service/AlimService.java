@@ -118,15 +118,17 @@ public class AlimService {
 		}
 	}
 	
-	public ResponseEntity<Map<String,Object>> list(String accessToken)
+	public ResponseEntity<Map<String,Object>> list(Integer observer, String accessToken)
 	{		
 		Map<String,Object> response = new HashMap<String, Object>();	
 		
 		try {
+			int pageSize = 10;
+			int offset = observer * pageSize;
 			int memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
 			List<AlimDto> alimList = new ArrayList<>();
 			
-			for(Alim alim : alimRepository.findAlimList(memberNum))
+			for(Alim alim : alimRepository.findAlimList(memberNum, pageSize, offset))
 			{
 				alimList.add(AlimDto.toDto(alim));
 			}

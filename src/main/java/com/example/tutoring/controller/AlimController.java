@@ -46,12 +46,12 @@ public class AlimController {
 	}
 	
 	@GetMapping("/list")
-	public  ResponseEntity<Map<String,Object>> list(HttpServletRequest request)
+	public  ResponseEntity<Map<String,Object>> list(@RequestParam(value="observer", required = false)Integer observer, HttpServletRequest request)
 	{
 		String accessToken = request.getHeader("Authorization").substring(7);
 		log.info("엑세스 토큰 : "+accessToken);
 		
-		return alimService.list(accessToken);
+		return alimService.list(observer, accessToken);
 	}
 
 }
