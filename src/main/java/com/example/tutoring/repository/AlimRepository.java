@@ -18,6 +18,8 @@ public interface AlimRepository extends JpaRepository<Alim, Integer>{
 	@Query("SELECT COUNT(a) > 0 FROM Alim a WHERE a.memberNum = :memberNum AND a.isRead = false")
 	boolean existsUnreadAlim(@Param("memberNum") Integer memberNum);
 	
-	@Query("SELECT a FROM Alim a WHERE a.memberNum = :memberNum")
-	List<Alim> findAlimList(@Param("memberNum") Integer memberNum);
+	@Query(value="SELECT * FROM alim a WHERE a.memberNum = :memberNum "+
+	"ORDER BY isRead ASC, sendTime DESC "+
+	"LIMIT :pageSize OFFSET :offset",nativeQuery = true)
+	List<Alim> findAlimList(@Param("memberNum") Integer memberNum, @Param("pageSize")int pageSize, @Param("offset")int offset);
 }
