@@ -12,8 +12,8 @@ import com.example.tutoring.entity.Alim;
 public interface AlimRepository extends JpaRepository<Alim, Integer>{
 	
 	@Modifying
-	@Query("UPDATE Alim a SET a.readTime = :readTime, a.isRead = :isRead WHERE a.alimNum = :alimNum")
-	void readAlim(@Param("readTime")Date readTime, @Param("isRead")boolean isRead, @Param("alimNum")Integer alimNum);
+	@Query("UPDATE Alim a SET a.readTime = :readTime, a.isRead = :isRead WHERE a.memberNum = :memberNum")
+	void readAlim(@Param("readTime")Date readTime, @Param("isRead")boolean isRead, @Param("memberNum")Integer memberNum);
 	
 	@Query("SELECT COUNT(a) > 0 FROM Alim a WHERE a.memberNum = :memberNum AND a.isRead = false")
 	boolean existsUnreadAlim(@Param("memberNum") Integer memberNum);
@@ -22,4 +22,7 @@ public interface AlimRepository extends JpaRepository<Alim, Integer>{
 	"ORDER BY isRead ASC, sendTime DESC "+
 	"LIMIT :pageSize OFFSET :offset",nativeQuery = true)
 	List<Alim> findAlimList(@Param("memberNum") Integer memberNum, @Param("pageSize")int pageSize, @Param("offset")int offset);
+
+	void deleteByMemberNum(Integer memberNum);
+
 }

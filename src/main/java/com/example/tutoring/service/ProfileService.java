@@ -104,7 +104,7 @@ public class ProfileService {
 				followRepository.save(Follow.toEntity(followDto));
 				log.info(me.get().getNickname()+" 가 "+followerNickName+"를 팔로우");
 				
-				alimService.sendAlim(follower.get().getMemberNum(),me.get().getNickname()+"님이 팔로우를 걸었습니다.", AlimType.TYPE_FOLLOW);
+				alimService.sendAlim(follower.get().getMemberNum(),me.get().getNickname(), AlimType.TYPE_FOLLOW);
 				
 				return ResponseEntity.status(HttpStatus.OK).body(responseMap);
 			}
