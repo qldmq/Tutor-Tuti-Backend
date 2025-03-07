@@ -79,19 +79,16 @@ public class AlimService {
 	}
 
 	@Transactional
-	public ResponseEntity<Map<String,Object>> read(Map<String,Object> alimData)
+	public ResponseEntity<Map<String,Object>> read(String accessToken)
 	{
 		Map<String,Object> response = new HashMap<String, Object>();
 		
 		try {
-			int alimNum = (int)alimData.get("alimNum");
-			alimRepository.readAlim(new Date(), true, alimNum);
-			entityManager.flush();
-			entityManager.clear();
-	
-			Optional<Alim> updateAlim = alimRepository.findById(alimNum);
-			response.put("alim", AlimDto.toDto(updateAlim.get()));
+			Integer memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
 			
+			alimRepository.readAlim(new Date(), true, memberNum);
+			entityManager.flush();
+			entityManager.clear();		
 			return ResponseEntity.status(HttpStatus.OK).body(response);
 		}catch(Exception e)
 		{
@@ -109,6 +106,24 @@ public class AlimService {
 		try {
 			alimRepository.deleteById(alimNum);
 			
+			response.put("message", "success");
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		} catch(Exception e)
+		{
+			response.put("message", e.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		}
+	}
+	
+	
+	@Transactional
+	public ResponseEntity<Map<String,Object>> deleteAll(String accessToken)
+	{
+		Map<String,Object> response = new HashMap<String, Object>();
+		
+		try {
+			Integer memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));			
+			alimRepository.deleteByMemberNum(memberNum);			
 			response.put("message", "success");
 			return ResponseEntity.status(HttpStatus.OK).body(response);
 		} catch(Exception e)
@@ -143,4 +158,8 @@ public class AlimService {
 		}		
 		
 	}
+	
+	
+	
+	
 }
