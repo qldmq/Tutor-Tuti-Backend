@@ -38,9 +38,11 @@ public class AlimController {
 	}
 			
 	@PatchMapping("/read")
-	public ResponseEntity<Map<String,Object>> read(@RequestBody Map<String, Object> alimData)
+	public ResponseEntity<Map<String,Object>> read(HttpServletRequest request)
 	{
-		return alimService.read(alimData);
+		String accessToken = request.getHeader("Authorization").substring(7);
+		log.info("엑세스 토큰 : "+accessToken);
+		return alimService.read(accessToken);
 	}
 	
 	@DeleteMapping("/delete")
@@ -48,6 +50,15 @@ public class AlimController {
 	{
 		return alimService.delete(alimNum);
 	}
+	
+	@DeleteMapping("/deleteAll")
+	public ResponseEntity<Map<String,Object>> deleteAll(HttpServletRequest request)
+	{
+		String accessToken = request.getHeader("Authorization").substring(7);
+		log.info("엑세스 토큰 : "+accessToken);
+		return alimService.deleteAll(accessToken);
+	}
+	
 	
 	@GetMapping("/list")
 	public  ResponseEntity<Map<String,Object>> list(@RequestParam(value="observer", required = false)Integer observer, HttpServletRequest request)
