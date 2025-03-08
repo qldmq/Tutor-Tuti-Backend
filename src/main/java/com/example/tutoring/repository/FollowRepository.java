@@ -85,6 +85,7 @@ public interface FollowRepository extends JpaRepository<Follow, Integer> {
     nativeQuery = true)
   	List<Object[]> findLastNoticeFollowMember(@Param("memberNum") int memberNum, @Param("pageSize") int pageSize, @Param("offset") int offset);
   	
-  	
+  	@Query("SELECT f FROM Follow f WHERE f.followingMemberNum = :followingMemberNum")
+  	List<Follow> findByFollower(@Param("followingMemberNum")Integer memberNum);
   	
 }

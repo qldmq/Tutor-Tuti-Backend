@@ -563,6 +563,19 @@ public class ProfileService {
 
 			noticeRepository.save(notice);						
 
+			List<Follow> followerList = followRepository.findByFollower(memberNum);
+			
+			String writeMemberNickName = memberRepository.findNicknameByMemberNum(memberNum).get().getNickname();
+			
+			if(followerList != null)
+			{
+				for(Follow follower : followerList)
+				{
+					alimService.sendAlim(follower.getFollowerMemberNum(),writeMemberNickName, AlimType.TYPE_NOTICE);
+				}
+
+			}
+						
 			return ResponseEntity.status(HttpStatus.OK).build();
 		} catch (Exception e) {
 			response.put("message", e.getMessage());
@@ -611,7 +624,12 @@ public class ProfileService {
 			LikeNotice likeNotice = LikeNotice.toEntity(likeNoticeDto);
 
 			likeNoticeRepository.save(likeNotice);
-
+			
+			Optional<Notice> notice = noticeRepository.findById(noticeNum);
+			String likeClickMemberNickName = memberRepository.findNicknameByMemberNum(memberNum).get().getNickname();
+					
+			alimService.sendAlim(notice.get().getMemberNum(),likeClickMemberNickName, AlimType.TYPE_LIKE);
+			
 			return ResponseEntity.status(HttpStatus.OK).build();
 		}
 	}
@@ -640,6 +658,12 @@ public class ProfileService {
 			DisLikeNotice disLikeNotice = DisLikeNotice.toEntity(disLikeNoticeDto);
 
 			disLikeNoticeRepository.save(disLikeNotice);
+			
+			Optional<Notice> notice = noticeRepository.findById(noticeNum);
+			String likeClickMemberNickName = memberRepository.findNicknameByMemberNum(memberNum).get().getNickname();
+					
+			alimService.sendAlim(notice.get().getMemberNum(),likeClickMemberNickName, AlimType.TYPE_DISLIKE);
+			
 
 			return ResponseEntity.status(HttpStatus.OK).build();
 		}

@@ -72,6 +72,9 @@ public class AlimController {
 	@GetMapping("/send")
 	public ResponseEntity<Map<String,Object>> send(@RequestParam(value="memberNum") Integer memberNum)
 	{
+		
+		log.info("send 테스트 진입");
+		
 		Map<String,Object> response = new HashMap<String, Object>();
 		try {
 			

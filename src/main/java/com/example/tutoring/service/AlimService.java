@@ -49,14 +49,32 @@ public class AlimService {
 	public SseEmitter subscribe(Integer memberNum) {
 		SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
 		emitters.put(memberNum, emitter);
+
+				
+		 emitter.onCompletion(() -> {
+		        log.info("SSE 연결 종료: memberNum = {}", memberNum);
+		        emitters.remove(memberNum);
+		    });
+
+		    emitter.onTimeout(() -> {
+		        log.info("SSE 타임아웃 발생: memberNum = {}", memberNum);
+		        emitters.remove(memberNum);
+		    });
 		
-		emitter.onCompletion(() -> emitters.remove(memberNum));
-		emitter.onTimeout(() -> emitters.remove(memberNum));
+		
+		try {
+	        // ✅ 최초 연결 확인을 위한 이벤트 전송
+	        emitter.send(SseEmitter.event().name("connect").data("SSE 연결 성공"));
+	    } catch (IOException e) {
+	        log.error("SSE 초기 메시지 전송 실패", e);
+	    }
+
+	    log.info("SSE 구독 요청: memberNum = {}", memberNum);
 		
 		return emitter;
 	}
 	
-	public void sendAlim(Integer memberNum, String alimMsg, AlimType alimType) {			
+	public void sendAlim(Integer memberNum, String alimMsg, AlimType alimType) {		
 		AlimDto alimDto = AlimDto.builder()
 						.memberNum(memberNum)
 						.alimMsg(alimMsg)
@@ -65,15 +83,19 @@ public class AlimService {
 						.isRead(false)
 						.build();
 		
+		log.info("Sse memberNum : "+emitters.get(memberNum));
+
 		alimRepository.save(Alim.toEntity(alimDto));
 		
 		if(emitters.containsKey(memberNum)) {
 			SseEmitter emitter = emitters.get(memberNum);
 			
 			try {
-				emitter.send(SseEmitter.event().data(alimDto));
+				emitter.send(SseEmitter.event().data(alimDto));				
+				log.info("알림 전송 성공");
 			} catch(IOException e) {
 				emitters.remove(memberNum);
+				log.info("알림 전송 실패 : "+e.getMessage());
 			}
 		}
 	}
