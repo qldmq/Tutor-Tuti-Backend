@@ -45,4 +45,6 @@ public interface MemberRepository extends JpaRepository<Member, Integer>{
     boolean existsByMemberNum(@Param("memberNum") int memberNum);
 
     List<Object[]> findByNicknameStartingWith(String nickname);
+    
+    Optional<Member> findNicknameByMemberNum(Integer memberNum);
 }
