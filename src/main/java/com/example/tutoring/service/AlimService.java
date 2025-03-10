@@ -14,6 +14,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -49,14 +50,32 @@ public class AlimService {
 	public SseEmitter subscribe(Integer memberNum) {
 		SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
 		emitters.put(memberNum, emitter);
+
+				
+		 emitter.onCompletion(() -> {
+		        log.info("SSE 연결 종료: memberNum = {}", memberNum);
+		        emitters.remove(memberNum);
+		    });
+
+		    emitter.onTimeout(() -> {
+		        log.info("SSE 타임아웃 발생: memberNum = {}", memberNum);
+		        emitters.remove(memberNum);
+		    });
 		
-		emitter.onCompletion(() -> emitters.remove(memberNum));
-		emitter.onTimeout(() -> emitters.remove(memberNum));
+		
+		try {
+	        // ✅ 최초 연결 확인을 위한 이벤트 전송
+	        emitter.send(SseEmitter.event().name("connect").data("SSE 연결 성공"));
+	    } catch (IOException e) {
+	        log.error("SSE 초기 메시지 전송 실패", e);
+	    }
+
+	    log.info("SSE 구독 요청: memberNum = {}", memberNum);
 		
 		return emitter;
 	}
 	
-	public void sendAlim(Integer memberNum, String alimMsg, AlimType alimType) {			
+	public void sendAlim(Integer memberNum, String alimMsg, AlimType alimType) {		
 		AlimDto alimDto = AlimDto.builder()
 						.memberNum(memberNum)
 						.alimMsg(alimMsg)
@@ -65,33 +84,34 @@ public class AlimService {
 						.isRead(false)
 						.build();
 		
+		log.info("Sse memberNum : "+emitters.get(memberNum));
+
 		alimRepository.save(Alim.toEntity(alimDto));
 		
 		if(emitters.containsKey(memberNum)) {
 			SseEmitter emitter = emitters.get(memberNum);
 			
 			try {
-				emitter.send(SseEmitter.event().data(alimDto));
+				emitter.send(SseEmitter.event().data(alimDto,MediaType.APPLICATION_JSON));				
+				log.info("알림 전송 성공");
 			} catch(IOException e) {
 				emitters.remove(memberNum);
+				log.info("알림 전송 실패 : "+e.getMessage());
 			}
 		}
 	}
 
 	@Transactional
-	public ResponseEntity<Map<String,Object>> read(Map<String,Object> alimData)
+	public ResponseEntity<Map<String,Object>> read(String accessToken)
 	{
 		Map<String,Object> response = new HashMap<String, Object>();
 		
 		try {
-			int alimNum = (int)alimData.get("alimNum");
-			alimRepository.readAlim(new Date(), true, alimNum);
-			entityManager.flush();
-			entityManager.clear();
-	
-			Optional<Alim> updateAlim = alimRepository.findById(alimNum);
-			response.put("alim", AlimDto.toDto(updateAlim.get()));
+			Integer memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
 			
+			alimRepository.readAlim(new Date(), true, memberNum);
+			entityManager.flush();
+			entityManager.clear();		
 			return ResponseEntity.status(HttpStatus.OK).body(response);
 		}catch(Exception e)
 		{
@@ -118,6 +138,24 @@ public class AlimService {
 		}
 	}
 	
+	
+	@Transactional
+	public ResponseEntity<Map<String,Object>> deleteAll(String accessToken)
+	{
+		Map<String,Object> response = new HashMap<String, Object>();
+		
+		try {
+			Integer memberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));			
+			alimRepository.deleteByMemberNum(memberNum);			
+			response.put("message", "success");
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		} catch(Exception e)
+		{
+			response.put("message", e.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		}
+	}
+	
 	public ResponseEntity<Map<String,Object>> list(Integer observer, String accessToken)
 	{		
 		Map<String,Object> response = new HashMap<String, Object>();	
@@ -134,6 +172,11 @@ public class AlimService {
 			}
 			
 			response.put("alimList", alimList);
+			
+			if(alimList.size() < pageSize)
+				response.put("flag", true);
+			else
+				response.put("flag", false);
 						
 			return ResponseEntity.status(HttpStatus.OK).body(response);
 		}catch(Exception e)
@@ -143,4 +186,8 @@ public class AlimService {
 		}		
 		
 	}
+	
+	
+	
+	
 }
