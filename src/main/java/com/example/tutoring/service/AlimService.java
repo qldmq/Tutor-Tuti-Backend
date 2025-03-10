@@ -14,6 +14,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -91,7 +92,7 @@ public class AlimService {
 			SseEmitter emitter = emitters.get(memberNum);
 			
 			try {
-				emitter.send(SseEmitter.event().data(alimDto));				
+				emitter.send(SseEmitter.event().data(alimDto,MediaType.APPLICATION_JSON));				
 				log.info("알림 전송 성공");
 			} catch(IOException e) {
 				emitters.remove(memberNum);
@@ -171,6 +172,11 @@ public class AlimService {
 			}
 			
 			response.put("alimList", alimList);
+			
+			if(alimList.size() < pageSize)
+				response.put("flag", true);
+			else
+				response.put("flag", false);
 						
 			return ResponseEntity.status(HttpStatus.OK).body(response);
 		}catch(Exception e)
