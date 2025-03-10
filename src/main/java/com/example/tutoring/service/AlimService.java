@@ -6,26 +6,20 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
 import com.example.tutoring.dto.AlimDto;
 import com.example.tutoring.entity.Alim;
 import com.example.tutoring.jwt.JwtTokenProvider;
 import com.example.tutoring.repository.AlimRepository;
 import com.example.tutoring.type.AlimType;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -172,6 +166,7 @@ public class AlimService {
 			}
 			
 			response.put("alimList", alimList);
+			response.put("hasAlim", false);
 			
 			if(alimList.size() < pageSize)
 				response.put("flag", true);
