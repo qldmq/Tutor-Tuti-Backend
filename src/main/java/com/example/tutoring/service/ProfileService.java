@@ -387,9 +387,11 @@ public class ProfileService {
 	}
 
 	// 작성한 공지글
-	public ResponseEntity<Map<String, Object>> notice(Integer observer, int memberNum) {
+	public ResponseEntity<Map<String, Object>> notice(Integer observer, int memberNum, String accessToken) {
 
 		Map<String, Object> response = new HashMap<>();
+
+		int accessTokenMemberNum = Integer.parseInt(jwtTokenProvider.getMemberNum(accessToken));
 
 		try {
 			Optional<Member> member = memberRepository.findByMemberNum(memberNum);
@@ -410,9 +412,8 @@ public class ProfileService {
 				noticeMap.put("noticeDate", notice[3]);
 				noticeMap.put("likeCount", notice[4]);
 				noticeMap.put("disLikeCount", notice[5]);
-
-				noticeMap.put("likeStatus", likeNoticeRepository.existsByNoticeNum((Integer) notice[0]));
-				noticeMap.put("disLikeStatus", disLikeNoticeRepository.existsByNoticeNum((Integer) notice[0]));
+				noticeMap.put("likeStatus", likeNoticeRepository.existsByMemberNumAndNoticeNum(accessTokenMemberNum, (Integer) notice[0]));
+				noticeMap.put("disLikeStatus", disLikeNoticeRepository.existsByMemberNumAndNoticeNum(accessTokenMemberNum, (Integer) notice[0]));
 
 				noticeList.add(noticeMap);
 			}

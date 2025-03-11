@@ -132,11 +132,13 @@ public class ProfileController {
 
 	// 작성한 공지글
 	@GetMapping("/notice")
-	public ResponseEntity<Map<String, Object>> notice(@RequestParam("observer") Integer observer, @RequestParam("memberNum") int memberNum) {
+	public ResponseEntity<Map<String, Object>> notice(@RequestParam("observer") Integer observer, @RequestParam("memberNum") int memberNum, HttpServletRequest request) {
 
 		log.info("myNotice api 진입");
 
-		return profileService.notice(observer, memberNum);
+		String accessToken = request.getHeader("Authorization").substring(7);
+
+		return profileService.notice(observer, memberNum, accessToken);
 	}
 
 
