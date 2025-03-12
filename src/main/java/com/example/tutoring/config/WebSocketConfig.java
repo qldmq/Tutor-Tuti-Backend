@@ -32,7 +32,7 @@ public class WebSocketConfig implements WebSocketConfigurer, WebSocketMessageBro
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
     	registry.addEndpoint("/chattings")
-    			.setAllowedOriginPatterns("*")
+    			.setAllowedOriginPatterns("http://localhost:8888", "http://localhost:3000")
     			.withSockJS();
     }
     
