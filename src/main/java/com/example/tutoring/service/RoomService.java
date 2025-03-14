@@ -3,6 +3,7 @@ package com.example.tutoring.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.example.tutoring.entity.Member;
 import com.example.tutoring.jwt.JwtTokenProvider;
 import com.example.tutoring.repository.MemberRepository;
 import com.example.tutoring.type.AlimType;
@@ -87,14 +89,18 @@ public class RoomService {
 			//생성된 방의 참여자 리스트 추출
 	    	HashOperations<String, Object, Object> hashOpsResult = redisTemplate.opsForHash();
 		    Map<Object, Object> membersMap = hashOpsResult.entries(roomKey);
-		    
+		    		    		    
 		    List<Map<String, Object>> participantList = membersMap.entrySet().stream()
 		    	    .filter(entry -> !entry.getKey().toString().equals("hostMemberNum"))
 		    	    .map(entry -> {
 		    	        Map<String, Object> member = new HashMap<>();
 		    	        int memberNum = Integer.parseInt(entry.getKey().toString());
+		    	        
+		    	        Optional<Member> participant = memberRepository.findById(memberNum);
+		    	        		    	        
 		    	        member.put("memberNum", memberNum);
-		    	        member.put("nickname", memberRepository.findNicknameByMemberNum(memberNum).get().getNickname());
+		    	        member.put("nickname", participant.get().getNickname());
+		    	        member.put("profileImg", participant.get().getProfileImg());
 		    	        member.put("initStatus", entry.getValue());
 		    	        return member;
 		    	    })
@@ -125,8 +131,11 @@ public class RoomService {
 		        .map(entry -> {
 		            Map<String, Object> member = new HashMap<>();
 		            int memberNum = Integer.parseInt(entry.getKey().toString());
+		            Optional<Member> participant = memberRepository.findById(memberNum);
+		            
 		            member.put("memberNum", memberNum);
-		            member.put("nickname",memberRepository.findNicknameByMemberNum(memberNum).get().getNickname());
+		            member.put("nickname",participant.get().getNickname());
+		            member.put("profileImg", participant.get().getProfileImg());
 		            member.put("initStatus", entry.getValue());
 		            return member;
 		        })
