@@ -39,7 +39,7 @@ public class RoomController {
 	    return roomService.getRoomMembers(roomId);
 	}	
 	
-	@PatchMapping("/udpateInitStatus")
+	@PatchMapping("/updateInitStatus")
 	public ResponseEntity<Map<String,Object>> updateInitStatus(HttpServletRequest request ,@RequestParam("roomId") Long roomId)
 	{
 		String accessToken = request.getHeader("Authorization").substring(7);
