@@ -94,6 +94,35 @@ public class AlimService {
 			}
 		}
 	}
+	
+	public void sendAlimLecture(Integer memberNum, String alimMsg, AlimType alimType, Integer roomId) {		
+		AlimDto alimDto = AlimDto.builder()
+						.memberNum(memberNum)
+						.alimMsg(alimMsg)
+						.alimType(alimType)
+						.sendTime(new Date())
+						.isRead(false)
+						.roomId(roomId)
+						.build();
+		
+		log.info("Sse memberNum : "+emitters.get(memberNum));
+
+		alimRepository.save(Alim.toEntity(alimDto));
+		
+		if(emitters.containsKey(memberNum)) {
+			SseEmitter emitter = emitters.get(memberNum);
+			
+			try {
+				emitter.send(SseEmitter.event().data(alimDto,MediaType.APPLICATION_JSON));				
+				log.info("알림 전송 성공");
+			} catch(IOException e) {
+				emitters.remove(memberNum);
+				log.info("알림 전송 실패 : "+e.getMessage());
+			}
+		}
+	}
+	
+	
 
 	@Transactional
 	public ResponseEntity<Map<String,Object>> read(String accessToken)

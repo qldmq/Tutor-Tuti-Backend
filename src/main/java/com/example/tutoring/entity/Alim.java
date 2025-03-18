@@ -50,6 +50,10 @@ public class Alim {
 	
 	@Column(name="isRead")
 	private boolean isRead;
+	
+	//알림타입이 LECTURE일 경우에만 사용
+	@Column(name="roomId")
+	private Integer roomId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memberNum", referencedColumnName = "memberNum", insertable = false, updatable = false)
@@ -64,6 +68,7 @@ public class Alim {
 				.sendTime(dto.getSendTime())
 				.readTime(dto.getReadTime())
 				.isRead(dto.isRead())
+				.roomId(dto.getRoomId())
 				.build();
 	}
 	

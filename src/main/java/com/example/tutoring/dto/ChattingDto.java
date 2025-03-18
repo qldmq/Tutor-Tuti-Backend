@@ -1,7 +1,6 @@
 package com.example.tutoring.dto;
 
 import com.example.tutoring.type.ChattingType;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,8 +16,10 @@ import lombok.ToString;
 @NoArgsConstructor
 public class ChattingDto {
 
+	private Integer roomId;
 	private String nickname;
 	private String content;
+	private String profileImg;
 	private ChattingType type;
-	
+
 }

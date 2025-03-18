@@ -80,6 +80,8 @@ public class RoomService {
 					
 					//참여자들에게 알림 발송
 					alimService.sendAlim(memberNum,memberRepository.findNicknameByMemberNum(hostMemberNum).get().getNickname(), AlimType.TYPE_LECTURE);
+					alimService.sendAlimLecture(memberNum, memberRepository.findNicknameByMemberNum(hostMemberNum).get().getNickname(), AlimType.TYPE_LECTURE, roomId.intValue());
+
 				}				
 			}
 			
