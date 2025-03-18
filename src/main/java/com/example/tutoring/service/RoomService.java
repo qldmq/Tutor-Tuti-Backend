@@ -1,9 +1,11 @@
 package com.example.tutoring.service;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -15,6 +17,8 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.WebSocketSession;
 
 import com.example.tutoring.entity.Member;
 import com.example.tutoring.jwt.JwtTokenProvider;
@@ -27,6 +31,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class RoomService {
+	
+    private final Map<Long, Map<String, WebSocketSession>> roomSessions = new ConcurrentHashMap<>();
 	
 	@Autowired
 	private RedisTemplate<String, Object> redisTemplate;
@@ -77,11 +83,9 @@ public class RoomService {
 				}
 				else {
 					hashOps.put(roomKey, memberNum, false);	
-					
+										
 					//참여자들에게 알림 발송
-					alimService.sendAlim(memberNum,memberRepository.findNicknameByMemberNum(hostMemberNum).get().getNickname(), AlimType.TYPE_LECTURE);
 					alimService.sendAlimLecture(memberNum, memberRepository.findNicknameByMemberNum(hostMemberNum).get().getNickname(), AlimType.TYPE_LECTURE, roomId.intValue());
-
 				}				
 			}
 			
@@ -213,6 +217,21 @@ public class RoomService {
 			redisTemplate.delete(roomKey);
 			log.info("[{}]번 방 삭제 완료", roomId);
 			responseData.put("message", roomId+"번 방 삭제 완료");
+			
+			
+			Map<String, WebSocketSession> sessions = roomSessions.remove(roomId);
+	        if (sessions != null) {
+	            for (WebSocketSession session : sessions.values()) {
+	                try {
+	                    session.close(CloseStatus.GOING_AWAY);
+	                    log.info("방 [{}]의 세션 종료: {}", roomId, session.getId());
+	                } catch (IOException e) {
+	                    log.error("세션 종료 오류: {}", session.getId(), e);
+	                }
+	            }
+	        }
+	        log.info("방 [{}]의 모든 WebSocket 세션이 종료됨", roomId);
+			
 			return ResponseEntity.status(HttpStatus.OK).body(responseData);
 			
 		}catch(Exception e)

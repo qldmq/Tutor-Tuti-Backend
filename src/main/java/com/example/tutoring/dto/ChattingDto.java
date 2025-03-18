@@ -1,5 +1,8 @@
 package com.example.tutoring.dto;
 
+
+
+import java.util.Date;
 import com.example.tutoring.type.ChattingType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,5 +24,6 @@ public class ChattingDto {
 	private String content;
 	private String profileImg;
 	private ChattingType type;
-
+	private Date sendTime;
+	
 }

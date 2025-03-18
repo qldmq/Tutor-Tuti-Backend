@@ -17,8 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SignalingHandler extends TextWebSocketHandler{
 
 	private static final ConcurrentHashMap<String, WebSocketSession> sessions = new ConcurrentHashMap<String, WebSocketSession>();
-	
-	
+		
 	@Override
     public void afterConnectionEstablished(WebSocketSession session) throws IOException{
         String userId = session.getId();

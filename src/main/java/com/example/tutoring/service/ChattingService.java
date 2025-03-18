@@ -1,10 +1,10 @@
 package com.example.tutoring.service;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -12,12 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.example.tutoring.dto.ChattingDto;
-import com.example.tutoring.repository.MemberRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -76,7 +73,7 @@ public class ChattingService {
 	public void insertChatting(ChattingDto chattingDto)
 	{		
 		ListOperations<String, Object> listOps = redisTemplate.opsForList();
-		
+		chattingDto.setSendTime(new Date());
 		try {
 			String chatJson = objectMapper.writeValueAsString(chattingDto);
 			listOps.rightPush("chat:"+chattingDto.getRoomId(), chatJson);
