@@ -25,6 +25,7 @@ public class AlimDto {
 	private Date sendTime;
 	private Date readTime;
 	private boolean isRead;
+	private Integer roomId;
 	
 	public static AlimDto toDto(Alim entity) {
 		return AlimDto.builder()
@@ -35,6 +36,7 @@ public class AlimDto {
 				.sendTime(entity.getSendTime())
 				.readTime(entity.getReadTime())
 				.isRead(entity.isRead())
+				.roomId(entity.getRoomId())
 				.build();
 	}
 	

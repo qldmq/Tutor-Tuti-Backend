@@ -36,6 +36,7 @@ public class RoomController {
 		
 	@GetMapping("/member")
 	public  ResponseEntity<Map<String, Object>> getRoomMembers(@RequestParam("roomId") Long roomId) {
+		System.out.println(roomId);
 	    return roomService.getRoomMembers(roomId);
 	}	
 	
