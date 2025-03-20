@@ -1,15 +1,12 @@
 package com.example.tutoring.service;
 
-import java.io.IOException;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-
 import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -17,23 +14,19 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.WebSocketSession;
-
+import com.example.tutoring.config.SignalingHandler;
+import com.example.tutoring.config.StompEventListener;
 import com.example.tutoring.entity.Member;
 import com.example.tutoring.jwt.JwtTokenProvider;
 import com.example.tutoring.repository.MemberRepository;
 import com.example.tutoring.type.AlimType;
-
 import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
 @Service
 public class RoomService {
-	
-    private final Map<Long, Map<String, WebSocketSession>> roomSessions = new ConcurrentHashMap<>();
-	
+		
 	@Autowired
 	private RedisTemplate<String, Object> redisTemplate;
 	
@@ -45,6 +38,12 @@ public class RoomService {
 	
 	@Autowired
 	private AlimService alimService;
+	
+	@Autowired
+	private SignalingHandler signalingHandler;
+	
+	@Autowired
+	private StompEventListener stompEventListener;
 	
 	@Transactional
 	public ResponseEntity<Map<String,Object>> createRoom(String accessToken, Map<String,Object> participants)
@@ -65,7 +64,7 @@ public class RoomService {
 			ValueOperations<String, Object> valueOps = redisTemplate.opsForValue();
 			
 			//roomId 생성
-			Long roomId = valueOps.increment("roomIdSeq",1);
+			Integer roomId = valueOps.increment("roomIdSeq",1).intValue();
 			String roomKey = "room:"+roomId;
 			
 			HashOperations<String, Object, Object> hashOps = redisTemplate.opsForHash();
@@ -124,7 +123,7 @@ public class RoomService {
 	}
 	
 	
-	public ResponseEntity<Map<String, Object>> getRoomMembers(Long roomId) {	    
+	public ResponseEntity<Map<String, Object>> getRoomMembers(Integer roomId) {	    
 		String roomKey = "room:" + roomId;
 	    Map<String, Object> responseData = new HashMap<>();
 		
@@ -202,7 +201,7 @@ public class RoomService {
 	}
 	
 	
-	public ResponseEntity<Map<String,Object>> deleteRoom(Long roomId)
+	public ResponseEntity<Map<String,Object>> deleteRoom(Integer roomId)
 	{
 		Map<String, Object> responseData = new HashMap<>();
 		
@@ -218,20 +217,10 @@ public class RoomService {
 			log.info("[{}]번 방 삭제 완료", roomId);
 			responseData.put("message", roomId+"번 방 삭제 완료");
 			
-			
-			Map<String, WebSocketSession> sessions = roomSessions.remove(roomId);
-	        if (sessions != null) {
-	            for (WebSocketSession session : sessions.values()) {
-	                try {
-	                    session.close(CloseStatus.GOING_AWAY);
-	                    log.info("방 [{}]의 세션 종료: {}", roomId, session.getId());
-	                } catch (IOException e) {
-	                    log.error("세션 종료 오류: {}", session.getId(), e);
-	                }
-	            }
-	        }
+			signalingHandler.handleDeleteSignalingRoom(roomId);
+			stompEventListener.handleDeleteChatRoom(roomId);			
 	        log.info("방 [{}]의 모든 WebSocket 세션이 종료됨", roomId);
-			
+	        
 			return ResponseEntity.status(HttpStatus.OK).body(responseData);
 			
 		}catch(Exception e)

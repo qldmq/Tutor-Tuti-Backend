@@ -16,17 +16,17 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocket
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketConfigurer, WebSocketMessageBrokerConfigurer{
-	
 	//webRTC 세팅
 	@Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(signalHandler(), "/signaling").setAllowedOrigins("*");
+        registry.addHandler(signalHandler(), "/signaling").setAllowedOrigins("*").withSockJS();
     }
 
     @Bean
     public WebSocketHandler signalHandler() {
         return new SignalingHandler();
     }
+
     
     //STOMP 세팅
     @Override
@@ -41,5 +41,5 @@ public class WebSocketConfig implements WebSocketConfigurer, WebSocketMessageBro
     	registry.enableSimpleBroker("/sub");
     	registry.setApplicationDestinationPrefixes("/pub");
     }
-	
+
 }

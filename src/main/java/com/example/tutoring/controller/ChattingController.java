@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.example.tutoring.config.StompEventListener;
 import com.example.tutoring.dto.ChattingDto;
 import com.example.tutoring.type.ChattingType;
 import com.example.tutoring.service.ChattingService;
@@ -30,6 +32,12 @@ public class ChattingController {
 	@MessageMapping("/{roomId}/messages")
 	private void chat(@DestinationVariable("roomId") Integer roomId, ChattingDto chattingDto)
 	{
+		
+		if (!StompEventListener.roomSessions.containsKey(roomId)) {
+	        log.warn("삭제된 방입니다. 메시지를 처리하지 않습니다. roomId: {}", roomId);
+	        return; // 삭제된 방에는 메시지를 전송하지 않음
+	    }
+		
 		chattingDto.setRoomId(roomId);
 		if(chattingDto.getType().equals(ChattingType.TYPE_IN))
 		{
