@@ -1,65 +1,106 @@
 package com.example.tutoring.config;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.springframework.stereotype.Component;
-import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.handler.TextWebSocketHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
+import org.springframework.stereotype.Component;
+import org.springframework.web.socket.*;
+import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Component
-public class SignalingHandler extends TextWebSocketHandler{
+public class SignalingHandler extends TextWebSocketHandler {
 
-	private static final ConcurrentHashMap<String, WebSocketSession> sessions = new ConcurrentHashMap<String, WebSocketSession>();
-		
-	@Override
-    public void afterConnectionEstablished(WebSocketSession session) throws IOException{
-        String userId = session.getId();
-        sessions.put(userId, session);
-        log.info("사용자 접속 : {}", session.getId());
+    private final Map<Integer, Set<WebSocketSession>> signalingRooms = new ConcurrentHashMap<>();
 
-        for(String id : sessions.keySet()){
-            if(!id.equals(userId)){
-                sendMessage(id,"{\"type\":\"new_peer\", \"id\":\"" + userId + "\"}");
-            }
-        }
+    @Override
+    public void afterConnectionEstablished(WebSocketSession session) {
+        log.info("새로운 WebRTC 연결: {}", session.getId());
     }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
-        String senderId = session.getId();
-        String payload = message.getPayload();
+        JSONObject jsonMessage = new JSONObject(message.getPayload());
+        String type = jsonMessage.getString("type");
+        Integer roomId = jsonMessage.getInt("roomId");
 
-        log.info("메시지 수신 : "+payload);
+        switch (type) {
+            case "create_room":
+                handleCreateRoom(roomId, session);
+                break;
+            case "join_room":
+                handleJoinRoom(roomId, session);
+                break;
+            case "offer":
+            case "answer":
+            case "candidate":
+                sendToRoom(roomId, session, jsonMessage);
+                break;
+            case "leave":
+                handleLeave(roomId, session);
+                break;
+        }
+    }
 
-        for(Map.Entry<String,WebSocketSession> entry : sessions.entrySet())
-        {
-            String receiverId = entry.getKey();
-            WebSocketSession receiverSession = entry.getValue();
+    private void handleCreateRoom(Integer roomId, WebSocketSession session) {
+        signalingRooms.putIfAbsent(roomId, ConcurrentHashMap.newKeySet());
+        signalingRooms.get(roomId).add(session);
+        log.info("방 생성됨: {}", roomId);
+    }
 
-            if(receiverSession.isOpen() && !receiverId.equals(senderId)){
-                receiverSession.sendMessage(new TextMessage(payload));
+    private void handleJoinRoom(Integer roomId, WebSocketSession session) {
+        signalingRooms.putIfAbsent(roomId, ConcurrentHashMap.newKeySet());
+        signalingRooms.get(roomId).add(session);
+        log.info("참여자 입장: {} - 방 ID: {}", session.getId(), roomId);
+    }
+
+    private void sendToRoom(Integer roomId, WebSocketSession sender, JSONObject message) throws IOException {
+        log.info("{} 전송: {} -> 방 ID: {}", message.getString("type"), sender.getId(), roomId);
+        
+        Set<WebSocketSession> sessions = signalingRooms.get(roomId);
+        if (sessions != null) {
+            for (WebSocketSession session : sessions) {
+                if (session.isOpen() && !session.equals(sender)) {
+                    session.sendMessage(new TextMessage(message.toString()));
+                }
             }
         }
     }
 
-    @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        sessions.remove(session.getId());
-        log.info("사용자 접속 해제 : {}", session.getId());
-    }
-
-    private void sendMessage(String userId, String message) throws IOException{
-        WebSocketSession session = sessions.get(userId);
-        if(session != null && session.isOpen()){
-            session.sendMessage(new TextMessage(message));
+    private void handleLeave(Integer roomId, WebSocketSession session) {
+        Set<WebSocketSession> sessions = signalingRooms.get(roomId);
+        if (sessions != null) {
+            sessions.remove(session);
+            log.info("사용자 퇴장: {} - 방 ID: {}", session.getId(), roomId);
+            if (sessions.isEmpty()) {
+                signalingRooms.remove(roomId);
+                log.info("방 삭제됨 (참여자 없음): {}", roomId);
+            }
         }
     }
-	
+
+    public void handleDeleteSignalingRoom(Integer roomId) throws IOException {
+        log.info("WebRTC 방 삭제됨: {}", roomId);
+        
+        Set<WebSocketSession> sessions = signalingRooms.get(roomId);
+        
+        if (sessions != null) {
+            for (WebSocketSession session : sessions) {
+                try {
+                    if (session.isOpen()) {
+                        session.close();
+                    }
+                } catch (IOException e) {
+                    log.error("WebRTC 세션 종료 실패: {}", session.getId(), e);
+                }
+            }
+        }
+        
+        signalingRooms.remove(roomId);
+        log.info("WebRTC 방 및 모든 세션 제거됨: {}", roomId);
+    }
+
 }

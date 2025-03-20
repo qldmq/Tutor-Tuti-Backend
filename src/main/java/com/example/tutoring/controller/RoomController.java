@@ -35,8 +35,7 @@ public class RoomController {
 	}
 		
 	@GetMapping("/member")
-	public  ResponseEntity<Map<String, Object>> getRoomMembers(@RequestParam("roomId") Long roomId) {
-		System.out.println(roomId);
+	public  ResponseEntity<Map<String, Object>> getRoomMembers(@RequestParam("roomId") Integer roomId) {
 	    return roomService.getRoomMembers(roomId);
 	}	
 	
@@ -50,7 +49,7 @@ public class RoomController {
 	}
 	
 	@DeleteMapping("/delete")
-	public ResponseEntity<Map<String,Object>> deleteRoom(@RequestParam("roomId") Long roomId)
+	public ResponseEntity<Map<String,Object>> deleteRoom(@RequestParam("roomId") Integer roomId)
 	{
 		return roomService.deleteRoom(roomId);
 	}
