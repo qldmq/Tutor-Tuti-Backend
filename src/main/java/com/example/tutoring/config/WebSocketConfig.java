@@ -19,7 +19,7 @@ public class WebSocketConfig implements WebSocketConfigurer, WebSocketMessageBro
 	//webRTC 세팅
 	@Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(signalHandler(), "/signaling").setAllowedOrigins("*").withSockJS();
+        registry.addHandler(signalHandler(), "/signaling").setAllowedOriginPatterns("http://localhost:8888", "http://localhost:3000").withSockJS();
     }
 
     @Bean

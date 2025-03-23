@@ -35,9 +35,13 @@ public class SignalingHandler extends TextWebSocketHandler {
                 handleJoinRoom(roomId, session);
                 break;
             case "offer":
+                handleOffer(roomId, session, jsonMessage);
+                break;
             case "answer":
+                handleAnswer(roomId, session, jsonMessage);
+                break;
             case "candidate":
-                sendToRoom(roomId, session, jsonMessage);
+                handleCandidate(roomId, session, jsonMessage);
                 break;
             case "leave":
                 handleLeave(roomId, session);
@@ -48,18 +52,39 @@ public class SignalingHandler extends TextWebSocketHandler {
     private void handleCreateRoom(Integer roomId, WebSocketSession session) {
         signalingRooms.putIfAbsent(roomId, ConcurrentHashMap.newKeySet());
         signalingRooms.get(roomId).add(session);
+                               
         log.info("방 생성됨: {}", roomId);
     }
 
     private void handleJoinRoom(Integer roomId, WebSocketSession session) {
+    	Set<WebSocketSession> sessions = signalingRooms.get(roomId);
+        if (sessions == null) {
+        	   log.error("방이 존재하지 않습니다: {}", roomId);
+               try {
+				session.sendMessage(new TextMessage("{\"error\": \"Room not found\"}"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+               return;
+        }
         signalingRooms.putIfAbsent(roomId, ConcurrentHashMap.newKeySet());
         signalingRooms.get(roomId).add(session);
+        
+        String message = "{\"type\": \"new_member\", \"roomId\": " + roomId + ", \"sessionId\": \"" + session.getId() + "\"}";
+        for (WebSocketSession s : sessions) {
+            try {
+                s.sendMessage(new TextMessage(message));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        
         log.info("참여자 입장: {} - 방 ID: {}", session.getId(), roomId);
     }
 
     private void sendToRoom(Integer roomId, WebSocketSession sender, JSONObject message) throws IOException {
         log.info("{} 전송: {} -> 방 ID: {}", message.getString("type"), sender.getId(), roomId);
-        
+
         Set<WebSocketSession> sessions = signalingRooms.get(roomId);
         if (sessions != null) {
             for (WebSocketSession session : sessions) {
@@ -84,9 +109,9 @@ public class SignalingHandler extends TextWebSocketHandler {
 
     public void handleDeleteSignalingRoom(Integer roomId) throws IOException {
         log.info("WebRTC 방 삭제됨: {}", roomId);
-        
+
         Set<WebSocketSession> sessions = signalingRooms.get(roomId);
-        
+
         if (sessions != null) {
             for (WebSocketSession session : sessions) {
                 try {
@@ -99,8 +124,23 @@ public class SignalingHandler extends TextWebSocketHandler {
             }
         }
         
+        
         signalingRooms.remove(roomId);
         log.info("WebRTC 방 및 모든 세션 제거됨: {}", roomId);
     }
 
+    private void handleOffer(Integer roomId, WebSocketSession session, JSONObject message) throws IOException {
+        log.info("Offer 전송: {} -> 방 ID: {}", session.getId(), roomId);
+        sendToRoom(roomId, session, message); 
+    }
+
+    private void handleAnswer(Integer roomId, WebSocketSession session, JSONObject message) throws IOException {
+        log.info("Answer 전송: {} -> 방 ID: {}", session.getId(), roomId);
+        sendToRoom(roomId, session, message); 
+    }
+
+    private void handleCandidate(Integer roomId, WebSocketSession session, JSONObject message) throws IOException {
+        log.info("Candidate 전송: {} -> 방 ID: {}", session.getId(), roomId);
+        sendToRoom(roomId, session, message); 
+    }
 }
