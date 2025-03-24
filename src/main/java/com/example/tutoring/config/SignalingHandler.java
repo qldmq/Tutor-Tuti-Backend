@@ -68,7 +68,8 @@ public class SignalingHandler extends TextWebSocketHandler {
                return;
         }
         signalingRooms.putIfAbsent(roomId, ConcurrentHashMap.newKeySet());
-        signalingRooms.get(roomId).add(session);
+        signalingRooms.get(roomId).add(session);        
+        sessions = signalingRooms.get(roomId);
         
         String message = "{\"type\": \"new_member\", \"roomId\": " + roomId + ", \"sessionId\": \"" + session.getId() + "\"}";
         for (WebSocketSession s : sessions) {
