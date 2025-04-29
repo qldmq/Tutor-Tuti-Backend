@@ -1,21 +1,47 @@
-<h1>TutorTutee</h1>
+# TutorTutee
 화상과외 프로그램
 
-<h2>BackEnd</h2>
-https://github.com/moonjinho99/Tutor-Tutee-Backend
-<h2>FrontEnd</h2>
-https://github.com/ParkYongHo1/TutorTutee-FrontEnd
-<br><br>
 
-<h2>팀원구성</h2>
+## 🖥️ 프로젝트 소개
+튜터튜티라는 화상 과외 프로그램입니다.
+WebRTC를 사용하여 튜터와 튜티가 실시간으로 연결되어 학습을 진행할 수 있는 플랫폼을 제공하며, 기본적인 회원가입, 로그인 기능 등이 이 포함되어 있습니다.
+<br>
 
-### 🛠 BackEnd
-| 이름 | 역할 | GitHub |
-|------|------|--------|
-| <img src="https://github.com/moonjinho99.png?size=70" width="70"> <br> **문진호** | 백엔드 개발자 | [@moonjinho99](https://github.com/moonjinho99) |
-| <img src="https://github.com/qldmq.png?size=70" width="70"> <br> **김서현** | 백엔드 개발자 | [@qldmq](https://github.com/qldmq) |
+## 🕰️ 개발 기간
+* 25.01 - 25.04
 
-### 🎨 FrontEnd
-| 이름 | 역할 | GitHub |
-|------|------|--------|
-| <img src="https://github.com/ParkYongHo1.png?size=70" width="70"> <br> **박용호** | 프론트엔드 개발자 | [@ParkYongHo1](https://github.com/ParkYongHo1) |
+### 🧑‍🤝‍🧑 맴버구성
+ - 김서현 : CRUD 기능 구현
+ - 문진호 : 서버 생성 및 관리
+ - 박용호 : 프론트엔드 개발
+
+### ⚙️ 개발 환경
+- `Java 17`
+- `JDK 17`
+- **IDE** : STS 3.9
+- **Framework** : Spring Boot (2.7.10)
+- **Database** : MySQL (8.0.28)
+- **ORM** : JPA (Spring Boot Starter Data JPA)
+
+## 📌 주요 기능
+#### 로그인
+- 카카오 소셜 로그인 기능 구현
+- ID찾기(보안을 위해 일부 가려서 전달), PW찾기
+- 비밀번호 재설정
+
+#### 회원가입
+- 이메일 중복 체크
+- 이메일 인증번호 전송 및 검증
+- 사용자 정보 DB 저장
+
+#### 마이페이지
+- 공지글 작성, 조회, 삭제 기능 구현
+- 공지글 좋아요/싫어요 기능 구현
+- 닉네임 변경 기능 구현
+- 한줄소개 변경 기능 구현
+
+#### 메인 페이지
+- 사용자 검색 기능 구현
+
+#### 공지글 작성 페이지
+- 무한 스크롤 기능 구현
