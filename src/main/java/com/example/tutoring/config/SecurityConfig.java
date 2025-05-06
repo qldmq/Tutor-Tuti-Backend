@@ -39,12 +39,13 @@ public class SecurityConfig {
          .antMatchers("/member/**","/oauth/**","/access-denied",
         		 "/image/**","/notice/**","/follow/**","/profile/**",
         		 "/signaling/**","/alim/**", "/search",
-        		 "/chattings/**","/sub/**","/pub/**","/room/**").permitAll()
+        		 "/chattings/**","/sub/**","/pub/**","/room/**","/app/**").permitAll()
          //.antMatchers("/image/**","/notice/**","/follow/**").hasRole("USER")
          .anyRequest().authenticated()
          .and()
          .oauth2Login()
-         .defaultSuccessUrl("http://localhost:3000/loading")
+         //.defaultSuccessUrl("http://localhost:3000/loading")
+         .defaultSuccessUrl("https://tutor-tutee.shop/loading")
          .and()        
          .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
      
