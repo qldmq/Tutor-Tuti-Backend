@@ -19,7 +19,7 @@ public class WebSocketConfig implements WebSocketConfigurer, WebSocketMessageBro
 	//webRTC 세팅
 	@Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(signalHandler(), "/signaling").setAllowedOriginPatterns("http://localhost:8888", "http://localhost:3000").withSockJS();
+        registry.addHandler(signalHandler(), "/signaling").setAllowedOriginPatterns("http://localhost:8888", "http://localhost:3000","https://tutor-tutee.shop").withSockJS();
     }
 
     @Bean
@@ -32,7 +32,7 @@ public class WebSocketConfig implements WebSocketConfigurer, WebSocketMessageBro
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
     	registry.addEndpoint("/chattings")
-    			.setAllowedOriginPatterns("http://localhost:8888", "http://localhost:3000")
+    			.setAllowedOriginPatterns("http://localhost:8888", "http://localhost:3000","https://tutor-tutee.shop")
     			.withSockJS();
     }
     
