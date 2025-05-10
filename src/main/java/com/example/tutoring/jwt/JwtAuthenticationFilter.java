@@ -61,7 +61,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 
                 String memberId = memberRepository.findMemberIdByMemberNum(memberNum);
 
-                UserDetails userDetails = customUserDetailsService.loadUserByUsername(memberId);  // memberNum으로 UserDetails 조회
+                CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(memberId);  // memberNum으로 UserDetails 조회
 
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
