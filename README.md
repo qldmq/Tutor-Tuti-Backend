@@ -1,6 +1,9 @@
 <h1>TutorTutee</h1>
 화상과외 프로그램
 
+## 접속 URL
+- URL : https://tutor-tutee.shop/app/
+
 ## 📦 Repository
 
 - 🔙 **BackEnd**: [Tutor-Tutee-Backend](https://github.com/moonjinho99/Tutor-Tutee-Backend)
