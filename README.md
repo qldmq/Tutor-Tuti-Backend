@@ -107,8 +107,8 @@
   <summary>✅ 소셜 로그인 시연 보기</summary>
 
   <br>
-
-  ![소셜 로그인](https://github.com/your-repo/assets/social-login.gif)
+  
+![Image](https://github.com/user-attachments/assets/a7dc7c44-dd46-4fbb-97af-5c4f90c28af7)
 
 </details>
 
