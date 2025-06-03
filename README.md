@@ -148,8 +148,7 @@
 ![Image](https://github.com/user-attachments/assets/1ea6e1fd-7bbe-4ca5-b077-3e763d661072)
 
 [호스트, 참여자 - 호스트의 실시간 화면 공유]
-![Image](https://github.com/user-attachments/assets/297aa3ff-c1b2-4fe0-80b3-a1878144804e)
-
+![Image](https://github.com/user-attachments/assets/0a9ff831-e20f-4ee5-ab31-026e3495c08d)
 </details>
 
 
