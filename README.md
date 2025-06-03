@@ -125,7 +125,7 @@
   - 강의 시작 알림  
   - 게시글 작성 및 좋아요/싫어요 알림  
 
-  ![실시간 알림](https://github.com/your-repo/assets/realtime-notification.gif)
+![Image](https://github.com/user-attachments/assets/e6b53d9d-bcbe-4a41-b69c-f36a7c8ef2f1)
 
 </details>
 
