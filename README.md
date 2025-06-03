@@ -108,7 +108,7 @@
 
   <br>
   
-![Image](https://github.com/user-attachments/assets/a7dc7c44-dd46-4fbb-97af-5c4f90c28af7)
+![Image](https://github.com/user-attachments/assets/be331fcd-969a-41a0-bc0c-43a01f5fff64)
 
 </details>
 
@@ -125,7 +125,7 @@
   - 강의 시작 알림  
   - 게시글 작성 및 좋아요/싫어요 알림  
 
-![Image](https://github.com/user-attachments/assets/e6b53d9d-bcbe-4a41-b69c-f36a7c8ef2f1)
+![Image](https://github.com/user-attachments/assets/3ded3439-b356-426c-8d43-5add1c17237c)
 
 </details>
 
