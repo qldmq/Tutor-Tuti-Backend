@@ -141,7 +141,14 @@
   - 실시간 화면 공유  
   - 채팅 기능  
 
-  ![화상 과외](https://github.com/your-repo/assets/video-tutoring.gif)
+[호스트 - 참여자 초대, 화면공유]
+![Image](https://github.com/user-attachments/assets/d36eda6c-9196-48c7-bf3a-61e43e3c8352)
+
+[참여자 - 강의 참여, 채팅]
+![Image](https://github.com/user-attachments/assets/1ea6e1fd-7bbe-4ca5-b077-3e763d661072)
+
+[호스트, 참여자 - 실시간 호스트의 화면 공유]
+
 
 </details>
 
