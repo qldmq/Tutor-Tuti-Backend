@@ -147,8 +147,8 @@
 [참여자 - 강의 참여, 채팅]
 ![Image](https://github.com/user-attachments/assets/1ea6e1fd-7bbe-4ca5-b077-3e763d661072)
 
-[호스트, 참여자 - 실시간 호스트의 화면 공유]
-
+[호스트, 참여자 - 호스트의 실시간 화면 공유]
+![Image](https://github.com/user-attachments/assets/297aa3ff-c1b2-4fe0-80b3-a1878144804e)
 
 </details>
 
