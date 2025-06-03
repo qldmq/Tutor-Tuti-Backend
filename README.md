@@ -125,7 +125,7 @@
   - 강의 시작 알림  
   - 게시글 작성 및 좋아요/싫어요 알림  
 
-![Image](https://github.com/user-attachments/assets/3ded3439-b356-426c-8d43-5add1c17237c)
+![Image](https://github.com/user-attachments/assets/7e95b539-9ec1-4089-87ec-16287632722f)
 
 </details>
 
