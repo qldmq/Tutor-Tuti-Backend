@@ -142,12 +142,18 @@
   - 채팅 기능  
 
 [호스트 - 참여자 초대, 화면공유]
-![Image](https://github.com/user-attachments/assets/d36eda6c-9196-48c7-bf3a-61e43e3c8352)
+<br>
+
+![Image](https://github.com/user-attachments/assets/9a4d8e15-4627-42e2-9dc0-974a62feedc3)
 
 [참여자 - 강의 참여, 채팅]
-![Image](https://github.com/user-attachments/assets/1ea6e1fd-7bbe-4ca5-b077-3e763d661072)
+<br>
+
+![Image](https://github.com/user-attachments/assets/e11e8031-e49e-41da-8293-5ec214d2f675)
 
 [호스트, 참여자 - 호스트의 실시간 화면 공유]
+<br>
+
 ![Image](https://github.com/user-attachments/assets/0a9ff831-e20f-4ee5-ab31-026e3495c08d)
 </details>
 
