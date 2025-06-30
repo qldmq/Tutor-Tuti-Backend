@@ -73,10 +73,20 @@ public class SignalingHandler extends TextWebSocketHandler {
         
         String message = "{\"type\": \"new_member\", \"roomId\": " + roomId + ", \"sessionId\": \"" + session.getId() + "\"}";
         for (WebSocketSession s : sessions) {
-            try {
-                s.sendMessage(new TextMessage(message));
-            } catch (IOException e) {
-                e.printStackTrace();
+        	
+        	if (!s.isOpen()) {
+        	    sessions.remove(s);
+        	    continue;
+        	}
+        	
+            if (s.isOpen()) {
+                try {
+                    s.sendMessage(new TextMessage(message));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                log.warn("닫힌 세션 감지: {}, 방 ID: {}", s.getId(), roomId);
             }
         }
         
