@@ -37,14 +37,6 @@ WebRTC를 사용하여 튜터와 튜티가 실시간으로 연결되어 학습�
 
 ---
 
-## 👥 팀원 구성
-
-<details>
-  <summary>🔽 클릭하여 팀원 보기</summary>
-
-  <br>
-</details>
-
 ## 📺 개발환경
 - <img src="https://img.shields.io/badge/IDE-%23121011?style=for-the-badge"> <img src="https://img.shields.io/badge/Eclipse-2C2255?style=for-the-badge&logo=Eclipse&logoColor=white"/>
 - <img src="https://img.shields.io/badge/Tool-%23121011?style=for-the-badge"> <img src="https://img.shields.io/badge/MobaXterm-3A4655?style=for-the-badge&logo=MobaXterm&logoColor=white"/> ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)
@@ -55,6 +47,7 @@ WebRTC를 사용하여 튜터와 튜티가 실시간으로 연결되어 학습�
 <br/><br/>
 <hr>
 
+---
 
 ### 🛠 BackEnd
 | 이름 | 역할 | GitHub |
